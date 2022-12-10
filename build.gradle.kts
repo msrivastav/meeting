@@ -1,7 +1,8 @@
 plugins {
 	base
-	java
 	checkstyle
+	idea
+	java
 }
 
 version = "0.0.1-SNAPSHOT"
