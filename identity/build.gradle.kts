@@ -1,6 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
+    idea
     id("org.springframework.boot") version "3.0.0"
     id("io.spring.dependency-management") version "1.1.0"
     kotlin("jvm") version "1.7.21"
@@ -25,6 +26,8 @@ repositories {
 extra["testcontainersVersion"] = "1.17.6"
 
 dependencies {
+    implementation(project(":proto"))
+
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-validation")
@@ -35,12 +38,14 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
-    compileOnly("org.projectlombok:lombok")
+    implementation("io.github.lognet:grpc-spring-boot-starter:4.9.1")
+    implementation("io.grpc:grpc-kotlin-stub:1.3.0")
+    implementation("com.google.protobuf:protobuf-kotlin:3.21.9")
+    implementation("me.dinowernli:java-grpc-prometheus:0.3.0")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     runtimeOnly("com.mysql:mysql-connector-j")
     runtimeOnly("io.micrometer:micrometer-registry-prometheus")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
-    annotationProcessor("org.projectlombok:lombok")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("io.projectreactor:reactor-test")
     testImplementation("org.testcontainers:junit-jupiter")

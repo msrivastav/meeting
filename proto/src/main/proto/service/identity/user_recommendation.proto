@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package com.meeting;
+
+option java_package = "com.meeting";
+option java_outer_classname = "UserRecommendationProto";
+option java_multiple_files = true;
+
+
+service UserRecommendationService {
+
+  rpc RecommendUsers(ProtoUserRecommendationRequest) returns (ProtoUserRecommendationResponse);
+
+}
+
+message ProtoUserRecommendationRequest {
+  string user_id_prefix = 1;
+}
+
+message ProtoUserRecommendationResponse {
+   repeated ProtoUser users = 1;
+}
+
+message ProtoUser {
+  string user_email_id = 1;
+  bool is_external = 2;
+}
