@@ -51,6 +51,7 @@ dependencies {
     testImplementation("org.testcontainers:junit-jupiter")
     testImplementation("org.testcontainers:mysql")
     testRuntimeOnly("com.h2database:h2")
+    runtimeOnly("com.h2database:h2")
 }
 
 dependencyManagement {

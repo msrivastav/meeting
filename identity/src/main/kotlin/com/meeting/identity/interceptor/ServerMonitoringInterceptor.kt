@@ -1,6 +1,7 @@
 package com.meeting.identity.interceptor
 
 import io.grpc.ServerInterceptor
+import io.prometheus.client.CollectorRegistry
 import me.dinowernli.grpc.prometheus.MonitoringServerInterceptor
 import org.lognet.springboot.grpc.GRpcGlobalInterceptor
 import org.springframework.context.annotation.Bean
@@ -11,7 +12,7 @@ class ServerInterceptorConfig {
 
     @Bean
     @GRpcGlobalInterceptor
-    fun monitoringInterceptor(): ServerInterceptor =
+    fun monitoringInterceptor(collectorRegistry: CollectorRegistry): ServerInterceptor =
         MonitoringServerInterceptor.create(
-            me.dinowernli.grpc.prometheus.Configuration.cheapMetricsOnly())
+            me.dinowernli.grpc.prometheus.Configuration.cheapMetricsOnly().withCollectorRegistry(collectorRegistry))
 }
