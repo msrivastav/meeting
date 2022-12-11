@@ -1,0 +1,9 @@
+grpc:
+  port: 6561
+management:
+  server:
+    port: 8481
+  endpoints:
+    web:
+      exposure:
+        include: "*"
