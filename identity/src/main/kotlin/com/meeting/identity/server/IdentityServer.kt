@@ -6,7 +6,7 @@ import com.meeting.ProtoUserRecommendationResponse
 import com.meeting.UserRecommendationServiceGrpcKt.UserRecommendationServiceCoroutineImplBase
 import org.lognet.springboot.grpc.GRpcService
 
-@GRpcService(interceptors = [])
+@GRpcService
 class IdentityServer : UserRecommendationServiceCoroutineImplBase() {
 
     override suspend fun recommendUsers(request: ProtoUserRecommendationRequest):

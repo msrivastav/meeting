@@ -27,6 +27,7 @@ extra["testcontainersVersion"] = "1.17.6"
 
 dependencies {
     implementation(project(":proto"))
+    implementation(project(":util"))
 
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
