@@ -7,6 +7,7 @@ plugins {
     kotlin("jvm") version "1.7.21"
     kotlin("plugin.spring") version "1.7.21"
     kotlin("plugin.jpa") version "1.7.21"
+    id("org.jetbrains.kotlin.plugin.allopen") version "1.7.22"
 }
 
 group = "com.meeting"
@@ -70,4 +71,8 @@ tasks.withType<KotlinCompile> {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+
+allOpen {
+    annotation("jakarta.persistence.Entity")
 }
