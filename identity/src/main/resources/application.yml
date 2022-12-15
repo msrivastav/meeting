@@ -1,5 +1,8 @@
 grpc:
   port: 6561
+
+server:
+  port: 8481
 management:
   server:
     port: 8481
@@ -19,3 +22,7 @@ spring:
       ddl-auto: update
     show-sql: true
 
+
+logging:
+  level:
+    root: info

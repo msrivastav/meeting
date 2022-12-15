@@ -10,8 +10,13 @@ class ExternalContactProcessor(
     private val externalContactRepository: ExternalContactRepository
 ) {
 
-    fun getExternalContactSuggestion(prefix: String) = externalContactRepository.findAll()
+    fun getExternalContactSuggestion(prefix: String): List<String> {
+        val x = externalContactRepository.findAll()
+        println("All Entries: $x")
+
+        return externalContactRepository.findAll()
             .map { it.getEmailIdPrefix() }
             .filter { it.startsWith(prefix, true) }
             .take(5)
+    }
 }

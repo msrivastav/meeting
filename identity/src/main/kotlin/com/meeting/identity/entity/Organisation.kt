@@ -9,7 +9,7 @@ import org.springframework.data.util.ProxyUtils
 @Entity
 class Organisation {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private var organisationId: Int = -1
     private var organisationName: String = ""
     private var emailDomain: String = ""

@@ -6,6 +6,7 @@ import com.meeting.ProtoUserRecommendationResponse
 import com.meeting.UserRecommendationServiceGrpcKt.UserRecommendationServiceCoroutineImplBase
 import com.meeting.identity.processor.ExternalContactProcessor
 import org.lognet.springboot.grpc.GRpcService
+import org.slf4j.LoggerFactory
 
 @GRpcService
 class IdentityServer(private val externalContactProcessor: ExternalContactProcessor) :
@@ -14,6 +15,8 @@ class IdentityServer(private val externalContactProcessor: ExternalContactProces
     override suspend fun recommendUsers(request: ProtoUserRecommendationRequest):
             ProtoUserRecommendationResponse {
 
+        log.debug("Input prefix value: $request")
+
         val externalUsers = externalContactProcessor.getExternalContactSuggestion(request.userIdPrefix)
             .map { id ->
                 ProtoUser.newBuilder()
@@ -21,17 +24,13 @@ class IdentityServer(private val externalContactProcessor: ExternalContactProces
                     .apply { isExternal = true }
                     .build()
             }
-
+        log.debug("Output id value: $externalUsers")
         return ProtoUserRecommendationResponse.newBuilder()
             .addAllUsers(externalUsers)
             .build()
+    }
 
-        /*        return ProtoUserRecommendationResponse.newBuilder()
-                    .addUsers(ProtoUser.newBuilder()
-                        .apply { userEmailId = "manoo.srivastav@gmail.com" }
-                        .apply { isExternal = true }
-                        .build()
-                    )
-                    .build()*/
+    companion object {
+        private val log = LoggerFactory.getLogger(this::class.java.name)
     }
 }

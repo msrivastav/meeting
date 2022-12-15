@@ -43,7 +43,8 @@ dependencies {
     implementation("io.github.lognet:grpc-spring-boot-starter:4.9.1")
     implementation("io.grpc:grpc-kotlin-stub:1.3.0")
     implementation("com.google.protobuf:protobuf-kotlin:3.21.9")
-    implementation("me.dinowernli:java-grpc-prometheus:0.3.0")
+    implementation("me.dinowernli:java-grpc-prometheus:0.6.0")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.9.0")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     runtimeOnly("com.mysql:mysql-connector-j")
     runtimeOnly("io.micrometer:micrometer-registry-prometheus")
@@ -52,8 +53,8 @@ dependencies {
     testImplementation("io.projectreactor:reactor-test")
     testImplementation("org.testcontainers:junit-jupiter")
     testImplementation("org.testcontainers:mysql")
+    testImplementation(kotlin("test"))
     testRuntimeOnly("com.h2database:h2")
-    runtimeOnly("com.h2database:h2")
 }
 
 dependencyManagement {

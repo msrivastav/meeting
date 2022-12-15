@@ -9,7 +9,7 @@ import org.springframework.data.util.ProxyUtils
 @Entity
 class ExternalContact {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private var externalContactId: Int = -1
     private var emailIdPrefix: String = ""
     private var contactOrgId: Int = -1
