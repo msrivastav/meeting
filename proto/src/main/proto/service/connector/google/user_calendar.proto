@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+package com.meeting;
+
+option java_package = "com.meeting";
+option java_outer_classname = "UserCalendarProto";
+option java_multiple_files = true;
+
+
+service UserCalendarService {
+
+  rpc GetUserCalendarSchedule(ProtoUserCalendarScheduleRequest) returns (ProtoUserCalendarScheduleResponse);
+
+}
+
+message ProtoUserCalendarScheduleRequest {
+  uint32 org_id = 1;
+  string calendar_id = 2;
+
+  // Format: YYYY-MM-DD. Example: 2007-12-03
+  string start_date = 3;
+}
+
+message ProtoUserCalendarScheduleResponse {
+   repeated ProtoCalendarEvent calendar_events = 1;
+}
+
+message ProtoCalendarEvent {
+  //Example: 2022-12-21T13:30+05:30[Asia/Kolkata]
+  string start_date_time = 1;
+
+  //Example: 2022-12-21T13:30+05:30[Asia/Kolkata]
+  string end_date_time = 2;
+}

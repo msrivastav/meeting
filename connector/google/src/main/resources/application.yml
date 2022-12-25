@@ -1,0 +1,24 @@
+grpc:
+  port: 6562
+
+server:
+  port: 8481
+management:
+  server:
+    port: 8482
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+logging:
+  level:
+    root: info
+
+meeting:
+  auth:
+    token-directory: tokens
+  calendar:
+    application-name: Meeting #calendar-app
+    fetch-days-before: 7
+    fetch-days-after: 14

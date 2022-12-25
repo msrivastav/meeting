@@ -1,0 +1,11 @@
+logging:
+  level:
+    root: debug
+
+meeting:
+  auth:
+    token-directory: tokens
+  calendar:
+    application-name: Meeting #calendar-app
+    fetch-days-before: 7
+    fetch-days-after: 14
