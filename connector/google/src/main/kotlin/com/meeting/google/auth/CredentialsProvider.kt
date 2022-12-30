@@ -11,6 +11,7 @@ import com.google.api.client.json.gson.GsonFactory
 import com.google.api.client.util.store.FileDataStoreFactory
 import com.google.api.services.calendar.CalendarScopes
 import com.meeting.common.datastore.OrgConfigStore
+import com.meeting.common.exception.OrgProviderConfigNotFoundException
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
@@ -18,8 +19,10 @@ import java.io.File
 
 @Component
 class CredentialsProvider(
-    @Value("\${meeting.auth.token-directory}") val tokenDirectory: String,
-    @Qualifier("clientOrgConfigStore") val orgConfigStore: OrgConfigStore) {
+    @Value("\${meeting.google.auth.token-directory}") private val tokenDirectory: String,
+    @Value("\${meeting.google.calendar.application-id}") private val googleApplicationId: Int,
+    @Qualifier("clientOrgConfigStore") private val orgConfigStore: OrgConfigStore
+) {
 
     private val jsonFactory = GsonFactory.getDefaultInstance()
     private val httpTransport: NetHttpTransport = GoogleNetHttpTransport.newTrustedTransport()
@@ -32,7 +35,11 @@ class CredentialsProvider(
      * Provides the Google credentials for a given client org
      */
     fun getCredentialsForClientOrg(orgId: Int): Credential {
-        val orgConfig = orgConfigStore.getOrgConfig(orgId) ?: throw ClientOrgNotConfiguredException(orgId)
+        val orgConfig =
+            orgConfigStore.getOrgProviderConfig(orgId, googleApplicationId) ?: throw OrgProviderConfigNotFoundException(
+                orgId,
+                googleApplicationId
+            )
 
         val clientSecrets =
             GoogleClientSecrets.load(jsonFactory, orgConfig.orgAdminOauth2Credentials.reader())

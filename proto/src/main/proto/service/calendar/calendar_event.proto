@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package com.meeting;
+
+option java_package = "com.meeting";
+option java_outer_classname = "CalendarEventProto";
+option java_multiple_files = true;
+
+import "google/type/datetime.proto";
+
+message ProtoUserCalendarResponse {
+
+  // Map of <calendar id, list of calendar events for the calendar id>
+  map<string, ProtoUserCalendarEvents> user_calendars = 1;
+}
+
+message ProtoCalendarEvent {
+  google.type.DateTime start_date_time = 1;
+  google.type.DateTime end_date_time = 2;
+}
+
+message ProtoUserCalendarEvents {
+  repeated ProtoCalendarEvent calendar_events = 1;
+}

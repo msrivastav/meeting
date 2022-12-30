@@ -1,0 +1,16 @@
+grpc:
+  port: 6562
+
+server:
+  port: 8482
+management:
+  server:
+    port: 8482
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+logging:
+  level:
+    root: info

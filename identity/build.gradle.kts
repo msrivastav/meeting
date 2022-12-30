@@ -28,7 +28,7 @@ extra["testcontainersVersion"] = "1.17.6"
 
 dependencies {
     implementation(project(":proto"))
-    implementation(project(":util"))
+    implementation(project(":common"))
 
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
@@ -42,7 +42,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
     implementation("io.github.lognet:grpc-spring-boot-starter:4.9.1")
     implementation("io.grpc:grpc-kotlin-stub:1.3.0")
-    implementation("com.google.protobuf:protobuf-kotlin:3.21.9")
+    implementation("com.google.protobuf:protobuf-kotlin:3.21.12")
     implementation("me.dinowernli:java-grpc-prometheus:0.6.0")
     testImplementation("org.junit.jupiter:junit-jupiter:5.9.0")
     developmentOnly("org.springframework.boot:spring-boot-devtools")

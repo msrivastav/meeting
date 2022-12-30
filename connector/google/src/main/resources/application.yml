@@ -16,9 +16,9 @@ logging:
     root: info
 
 meeting:
-  auth:
-    token-directory: tokens
-  calendar:
-    application-name: Meeting #calendar-app
-    fetch-days-before: 7
-    fetch-days-after: 14
+  google:
+    auth:
+      token-directory: tokens
+    calendar:
+      application-id: 1
+      application-name: Meeting #calendar-app

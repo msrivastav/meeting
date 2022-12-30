@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package com.meeting;
+
+option java_package = "com.meeting";
+option java_outer_classname = "UserCalendarAndSuggestionsProto";
+option java_multiple_files = true;
+
+import "service/calendar/calendar_event.proto";
+import "google/type/date.proto";
+
+service UserCalendarsAndSuggestionsService {
+
+  rpc GetUserCalendarAndSuggestions(ProtoUserCalendarsAndSuggestionsRequest) returns (ProtoUserCalendarsAndSuggestionsResponse);
+
+}
+
+message ProtoUserCalendarsAndSuggestionsRequest {
+  uint32 org_id = 1;
+  repeated string calendar_id = 2;
+
+  google.type.Date start_date = 3;
+}
+
+message ProtoUserCalendarsAndSuggestionsResponse {
+
+  ProtoUserCalendarResponse user_calendar_response = 1;
+
+  // Start time and end time for meeting timeslot suggestions
+  ProtoUserCalendarEvents suggestions = 2;
+}

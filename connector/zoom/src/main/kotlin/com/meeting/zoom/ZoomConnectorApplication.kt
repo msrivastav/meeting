@@ -1,11 +1,11 @@
-package com.meeting.identity
+package com.meeting.zoom
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 
 @SpringBootApplication(scanBasePackages = ["com.meeting"])
-class IdentityApplication
+class ZoomConnectorApplication
 
 fun main(args: Array<String>) {
-    runApplication<IdentityApplication>(*args)
+    runApplication<ZoomConnectorApplication>(*args)
 }

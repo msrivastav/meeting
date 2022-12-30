@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package com.meeting;
+
+option java_package = "com.meeting";
+option java_outer_classname = "UserCalendarProto";
+option java_multiple_files = true;
+
+import "service/calendar/calendar_event.proto";
+import "google/type/date.proto";
+
+service UserCalendarService {
+
+  rpc GetUserCalendar(ProtoUserCalendarRequest) returns (ProtoUserCalendarResponse);
+
+}
+
+message ProtoUserCalendarRequest {
+  uint32 org_id = 1;
+  repeated string calendar_id = 2;
+
+  google.type.Date start_date = 3;
+  uint32 fetch_days_before = 4;
+  uint32 fetch_days_after = 5;
+}

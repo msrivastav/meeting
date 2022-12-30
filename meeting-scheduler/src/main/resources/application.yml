@@ -1,0 +1,25 @@
+grpc:
+  port: 6563
+
+server:
+  port: 8485
+management:
+  server:
+    port: 8486
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+logging:
+  level:
+    root: info
+
+meeting:
+  calendar:
+    fetch-days-before: 7
+    fetch-days-after: 14
+  connector-endpoints:
+    1:
+      host: localhost
+      port: 6562

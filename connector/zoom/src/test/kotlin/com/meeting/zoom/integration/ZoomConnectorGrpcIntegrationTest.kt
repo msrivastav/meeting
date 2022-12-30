@@ -1,5 +1,5 @@
 /*
-package com.meeting.google.integration
+package com.meeting.zoom.integration
 
 import com.meeting.ProtoUser
 import com.meeting.ProtoUserRecommendationRequest
@@ -50,7 +50,7 @@ class UserRecommendationGrpcIntegrationTest {
         private const val DATABASE_PASSWORD = "password"
         private const val DATABASE_NAME = "identity"
 
-        prvate const val GRPC_PORT = 6000
+        private const val GRPC_PORT = 6000
         private lateinit var channel: ManagedChannel
         lateinit var stub: UserRecommendationServiceCoroutineStub
 
@@ -65,7 +65,7 @@ class UserRecommendationGrpcIntegrationTest {
 
         @DynamicPropertySource
         @JvmStatic
-        fun inijectDatabaseProperties(registry: DynamicPropertyRegistry) {
+        fun injectDatabaseProperties(registry: DynamicPropertyRegistry) {
             val mysqlDatabaseUrl =
                 "jdbc:mysql://" + mysqlContainer.host + ":" + mysqlContainer.firstMappedPort + "/" + DATABASE_NAME
             registry.add("spring.datasource.url") { mysqlDatabaseUrl }

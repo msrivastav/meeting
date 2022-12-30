@@ -17,10 +17,8 @@ import java.util.*
 
 @Service
 class GoogleCalendarService(
-    @Value("\${meeting.calendar.application-name}") val calendarApplicationName: String,
-    @Value("\${meeting.calendar.fetch-days-before}") val fetchDaysBefore: Long,
-    @Value("\${meeting.calendar.fetch-days-after}") val fetchDaysAfter: Long,
-    val credentialsProvider: CredentialsProvider
+    @Value("\${meeting.google.calendar.application-name}") private val calendarApplicationName: String,
+    private val credentialsProvider: CredentialsProvider
 ) : CalendarService {
 
     private val jsonFactory = GsonFactory.getDefaultInstance()
@@ -30,22 +28,24 @@ class GoogleCalendarService(
     override fun getUserCalendarSchedule(
         orgId: Int,
         calendarId: String,
-        startDate: LocalDate
+        startDate: LocalDate,
+        fetchDaysBefore: Int,
+        fetchDaysAfter: Int
     ): List<CalendarEvent> {
 
         val credentials = credentialsProvider.getCredentialsForClientOrg(orgId)
 
         val service: Calendar =
             Calendar.Builder(httpTransport, jsonFactory, credentials)
-                .setApplicationName(calendarApplicationName)
+                .apply { applicationName =  calendarApplicationName }
                 .build()
 
-        val startDateTime = startDate.minusDays(fetchDaysBefore).toEpochDay() * millisInADay
-        val endDateTime = startDate.plusDays(fetchDaysAfter).toEpochDay() * millisInADay
+        val startDateTime = startDate.minusDays(fetchDaysBefore.toLong()).toEpochDay() * millisInADay
+        val endDateTime = startDate.plusDays(fetchDaysAfter.toLong()).toEpochDay() * millisInADay
 
         val events = service.events().list(calendarId)
-            .setTimeMin(DateTime(startDateTime))
-            .setTimeMax(DateTime(endDateTime))
+            .apply { timeMin = DateTime(startDateTime) }
+            .apply { timeMax = DateTime(endDateTime) }
             .execute()
             .items
             .map { convertToCalendarEvent(it) }

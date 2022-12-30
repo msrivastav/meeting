@@ -24,6 +24,13 @@ repositories {
 extra["testcontainersVersion"] = "1.17.6"
 
 dependencies {
+    implementation(project(":proto"))
+    implementation(project(":common"))
+    implementation(project(":util"))
+
+    implementation("io.github.lognet:grpc-spring-boot-starter:4.9.1")
+    implementation("io.grpc:grpc-kotlin-stub:1.3.0")
+    implementation("me.dinowernli:java-grpc-prometheus:0.6.0")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-web")
@@ -33,11 +40,9 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
-    compileOnly("org.projectlombok:lombok")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     runtimeOnly("io.micrometer:micrometer-registry-prometheus")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
-    annotationProcessor("org.projectlombok:lombok")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("io.projectreactor:reactor-test")
     testImplementation("org.testcontainers:junit-jupiter")
