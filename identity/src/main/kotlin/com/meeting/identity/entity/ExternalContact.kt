@@ -44,6 +44,6 @@ class ExternalContact {
 
     override fun toString(): String {
         return "ExternalContact(organisationId=$externalContactId, " +
-                "organisationName='$emailIdPrefix', emailDomain='$contactOrgId')"
+            "organisationName='$emailIdPrefix', emailDomain='$contactOrgId')"
     }
 }

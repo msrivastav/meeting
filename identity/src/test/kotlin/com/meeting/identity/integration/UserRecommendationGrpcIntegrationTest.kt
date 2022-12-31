@@ -21,7 +21,6 @@ import org.testcontainers.junit.jupiter.Testcontainers
 import org.testcontainers.utility.DockerImageName
 import kotlin.test.assertEquals
 
-
 @SpringBootTest(properties = ["grpc.port=6000"])
 @Testcontainers
 class UserRecommendationGrpcIntegrationTest {
@@ -38,7 +37,8 @@ class UserRecommendationGrpcIntegrationTest {
                 ProtoUser.newBuilder()
                     .apply { userEmailId = "manoo.srivastav" }
                     .apply { isExternal = true }
-                    .build())
+                    .build()
+            )
             .build()
         val actualResult = runBlocking { stub.recommendUsers(request) }
 

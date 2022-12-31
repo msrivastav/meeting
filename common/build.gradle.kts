@@ -23,6 +23,9 @@ repositories {
 }
 
 dependencies {
+    implementation(project(":proto"))
+    implementation(project(":util"))
+
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("io.github.lognet:grpc-spring-boot-starter:4.9.1")

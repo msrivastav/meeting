@@ -13,8 +13,7 @@ class IdentityServer(private val externalContactProcessor: ExternalContactProces
     UserRecommendationServiceCoroutineImplBase() {
 
     override suspend fun recommendUsers(request: ProtoUserRecommendationRequest):
-            ProtoUserRecommendationResponse {
-
+        ProtoUserRecommendationResponse {
         log.debug("Input prefix value: $request")
 
         val externalUsers = externalContactProcessor.getExternalContactSuggestion(request.userIdPrefix)

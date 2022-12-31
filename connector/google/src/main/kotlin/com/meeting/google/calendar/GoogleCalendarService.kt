@@ -9,6 +9,8 @@ import com.google.api.services.calendar.model.Event
 import com.meeting.common.calendar.CalendarEvent
 import com.meeting.common.calendar.CalendarService
 import com.meeting.google.auth.CredentialsProvider
+import io.micrometer.core.instrument.DistributionSummary
+import io.micrometer.core.instrument.MeterRegistry
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
@@ -18,12 +20,22 @@ import java.util.*
 @Service
 class GoogleCalendarService(
     @Value("\${meeting.google.calendar.application-name}") private val calendarApplicationName: String,
-    private val credentialsProvider: CredentialsProvider
+    private val credentialsProvider: CredentialsProvider,
+    meterRegistry: MeterRegistry
 ) : CalendarService {
 
     private val jsonFactory = GsonFactory.getDefaultInstance()
     private val httpTransport: NetHttpTransport = GoogleNetHttpTransport.newTrustedTransport()
     private val millisInADay = Duration.ofDays(1).toMillis()
+    private val numberOfEventsInCalendarDistribution: DistributionSummary
+
+    init {
+        numberOfEventsInCalendarDistribution = DistributionSummary.builder("connector.google.events.per.calendar")
+            .publishPercentileHistogram()
+            .percentilePrecision(3)
+            .publishPercentiles(.5, .75, .90, .95, .99, .999)
+            .register(meterRegistry)
+    }
 
     override fun getUserCalendarSchedule(
         orgId: Int,
@@ -32,12 +44,11 @@ class GoogleCalendarService(
         fetchDaysBefore: Int,
         fetchDaysAfter: Int
     ): List<CalendarEvent> {
-
         val credentials = credentialsProvider.getCredentialsForClientOrg(orgId)
 
         val service: Calendar =
             Calendar.Builder(httpTransport, jsonFactory, credentials)
-                .apply { applicationName =  calendarApplicationName }
+                .apply { applicationName = calendarApplicationName }
                 .build()
 
         val startDateTime = startDate.minusDays(fetchDaysBefore.toLong()).toEpochDay() * millisInADay
@@ -49,6 +60,8 @@ class GoogleCalendarService(
             .execute()
             .items
             .map { convertToCalendarEvent(it) }
+
+        numberOfEventsInCalendarDistribution.record(events.size.toDouble())
 
         log.debug("Calendar event for org: $orgId, calendarId: $calendarId, startDate: $startDate are: $events")
 

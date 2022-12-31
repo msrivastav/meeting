@@ -8,5 +8,4 @@ class ConnectorEndpointsStore(private val connectorEndpoints: ConcurrentHashMap<
     fun getHostPort(providerId: Int) = connectorEndpoints[providerId]
 }
 
-
 data class HostPort(val host: String, val port: Int)

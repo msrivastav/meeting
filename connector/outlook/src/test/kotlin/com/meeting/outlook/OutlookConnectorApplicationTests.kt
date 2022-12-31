@@ -9,10 +9,9 @@ import org.springframework.boot.test.mock.mockito.MockBean
 class OutlookConnectorApplicationTests {
 
     @MockBean
-    private lateinit var collectorRegistry : CollectorRegistry
+    private lateinit var collectorRegistry: CollectorRegistry
 
     @Test
     fun contextLoads() {
     }
-
 }

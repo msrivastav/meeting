@@ -44,6 +44,6 @@ class Organisation {
 
     override fun toString(): String {
         return "Organisation(organisationId=$organisationId, " +
-                "organisationName='$organisationName', emailDomain='$emailDomain')"
+            "organisationName='$organisationName', emailDomain='$emailDomain')"
     }
 }

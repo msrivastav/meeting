@@ -24,8 +24,8 @@ repositories {
 extra["testcontainersVersion"] = "1.17.6"
 
 dependencies {
-    implementation(project(":proto"))
     implementation(project(":common"))
+    implementation(project(":proto"))
     implementation(project(":util"))
 
     implementation("io.github.lognet:grpc-spring-boot-starter:4.9.1")

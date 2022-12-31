@@ -22,7 +22,6 @@ class GoogleConnectorDebuggerEndpoint(private val service: GoogleCalendarService
         @PathVariable fetchDaysBefore: Int,
         @PathVariable fetchDaysAfter: Int
     ): Map<String, List<CalendarEvent>> {
-
         val responseMap = HashMap<String, List<CalendarEvent>>()
 
         calendarIds.forEach {

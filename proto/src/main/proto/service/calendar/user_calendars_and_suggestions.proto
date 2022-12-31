@@ -7,11 +7,13 @@ option java_outer_classname = "UserCalendarAndSuggestionsProto";
 option java_multiple_files = true;
 
 import "service/calendar/calendar_event.proto";
-import "google/type/date.proto";
+import "google/type/datetime.proto";
+import "google/protobuf/duration.proto";
 
 service UserCalendarsAndSuggestionsService {
 
-  rpc GetUserCalendarAndSuggestions(ProtoUserCalendarsAndSuggestionsRequest) returns (ProtoUserCalendarsAndSuggestionsResponse);
+  rpc GetUserCalendarAndSuggestions(ProtoUserCalendarsAndSuggestionsRequest)
+      returns (ProtoUserCalendarEventsWithSuggestionsResponse);
 
 }
 
@@ -19,13 +21,17 @@ message ProtoUserCalendarsAndSuggestionsRequest {
   uint32 org_id = 1;
   repeated string calendar_id = 2;
 
-  google.type.Date start_date = 3;
+  // The zoned start date time selected by user, or the current date time at
+  // users side if no specific time is selected.
+  google.type.DateTime start_date = 3;
+  optional google.protobuf.Duration duration = 4;
 }
 
-message ProtoUserCalendarsAndSuggestionsResponse {
+message ProtoUserCalendarEventsWithSuggestionsResponse {
 
-  ProtoUserCalendarResponse user_calendar_response = 1;
+  // Calendar events for all calendar ids
+  repeated ProtoUserCalendarEvents user_calendars = 1;
 
   // Start time and end time for meeting timeslot suggestions
-  ProtoUserCalendarEvents suggestions = 2;
+  repeated ProtoCalendarEvent suggestions = 2;
 }

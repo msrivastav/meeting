@@ -1,17 +1,19 @@
 package com.meeting.meetingscheduler.client.calendar
 
 import com.meeting.ProtoUserCalendarRequest
-import com.meeting.ProtoUserCalendarsAndSuggestionsResponse
+import com.meeting.common.calendar.UserCalendarEventsWithSuggestions
+import com.meeting.common.calendar.toUserCalendarEvents
 import com.meeting.common.datastore.OrgConfigStore
 import com.meeting.common.exception.OrgApplicationTypeConfigNotFoundException
 import com.meeting.common.type.ApplicationType
-import com.meeting.util.datetime.toProtoDate
+import com.meeting.util.datetime.toProtoDateTime
 import io.micrometer.core.instrument.Counter
 import io.micrometer.core.instrument.MeterRegistry
 import kotlinx.coroutines.runBlocking
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
-import java.time.LocalDate
+import java.time.Duration
+import java.time.ZonedDateTime
 import java.util.concurrent.ConcurrentHashMap
 
 /**
@@ -38,34 +40,40 @@ class CalendarSuggestionService(
     fun getUserCalendarsAndSuggestions(
         orgId: Int,
         calendarIds: List<String>,
-        startDate: LocalDate
-    ): ProtoUserCalendarsAndSuggestionsResponse {
-
+        startDate: ZonedDateTime,
+        duration: Duration
+    ): UserCalendarEventsWithSuggestions {
         val calendarProviderId = getCalendarProviderId(orgId)
 
         val clientForCalendarConnector = calendarConnectorProviderResolver.getGrpcClientForProvider(calendarProviderId)
 
         val connectorRequest = ProtoUserCalendarRequest.newBuilder()
             .apply { this.orgId = orgId }
-            .apply { this.startDate = startDate.toProtoDate() }
+            .apply { this.startDate = startDate.toProtoDateTime() }
             .apply { fetchDaysBefore = this@CalendarSuggestionService.fetchDaysBefore }
             .apply { fetchDaysAfter = this@CalendarSuggestionService.fetchDaysAfter }
             .addAllCalendarId(calendarIds)
             .build()
 
-        val userCalendarResponse = runBlocking { clientForCalendarConnector.getUserCalendar(connectorRequest) }
+        val userCalendarEvents =
+            runBlocking {
+                clientForCalendarConnector.getUserCalendar(connectorRequest)
+                    .userCalendarsList
+                    .map { it.toUserCalendarEvents() }
+            }
 
         val suggestions = CalendarSuggestionHelper.getMeetingTimeslotSuggestions(
-            userCalendarResponse.userCalendarsMap.values.toSet()
+            // For suggestions, consider only the meetings for which end time is after the given start time,
+            // because user only needs suggestions for a new meeting it is trying to create
+            userCalendarEvents.flatMap { it.calendarEvents }.filter { it.endDateTime.isAfter(startDate) },
+            duration,
+            startDate.plusDays(fetchDaysAfter.toLong())
         )
 
-        responseSize.increment(userCalendarResponse.userCalendarsCount.toDouble())
-        responseSize.increment(suggestions.calendarEventsCount.toDouble())
+        responseSize.increment(userCalendarEvents.size.toDouble())
+        responseSize.increment(suggestions.size.toDouble())
 
-        return ProtoUserCalendarsAndSuggestionsResponse.newBuilder()
-            .apply { this.userCalendarResponse = userCalendarResponse }
-            .apply { this.suggestions = suggestions }
-            .build()
+        return UserCalendarEventsWithSuggestions(userCalendarEvents, suggestions)
     }
 
     private fun getCalendarProviderId(orgId: Int): Int {

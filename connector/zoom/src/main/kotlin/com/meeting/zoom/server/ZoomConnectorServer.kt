@@ -12,10 +12,8 @@ class ZoomConnectorServer :
     UserRecommendationServiceCoroutineImplBase() {
 
     override suspend fun recommendUsers(request: ProtoUserRecommendationRequest):
-            ProtoUserRecommendationResponse {
-
+        ProtoUserRecommendationResponse {
         log.debug("Input prefix value: $request")
-
 
         return ProtoUserRecommendationResponse.newBuilder()
             .addUsers(ProtoUser.getDefaultInstance())

@@ -57,8 +57,7 @@ class CredentialsProvider(
 
         val receiver = LocalServerReceiver.Builder().build()
 
-        //returns an authorized Credential object.
+        // returns an authorized Credential object.
         return AuthorizationCodeInstalledApp(flow, receiver).authorize(orgConfig.orgAdminId)
-
     }
 }

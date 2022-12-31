@@ -43,7 +43,6 @@ class OrgConfigStore {
         appType: ApplicationType,
         hasDedicatedApi: Boolean
     ) {
-
         orgConfigs.compute(orgId) { _, v ->
             var providerToConfig = v
             if (providerToConfig == null) {
@@ -54,7 +53,6 @@ class OrgConfigStore {
             providerToConfig
         }
     }
-
 
     fun removeOrgConfig(orgId: Int) = orgConfigs.remove(orgId)
 

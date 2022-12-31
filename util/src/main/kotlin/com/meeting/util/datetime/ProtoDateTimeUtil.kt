@@ -4,10 +4,7 @@ import com.google.type.Date
 import com.google.type.DateTime
 import com.google.type.TimeOfDay
 import com.google.type.TimeZone
-import java.time.LocalDate
-import java.time.LocalTime
-import java.time.ZoneId
-import java.time.ZonedDateTime
+import java.time.*
 
 /**
  * Converts [LocalDate] to [Date].
@@ -32,7 +29,6 @@ fun LocalTime.toProtoTimeOfDay(): TimeOfDay = TimeOfDay.newBuilder()
     .apply { seconds = this@toProtoTimeOfDay.second }
     .apply { nanos = this@toProtoTimeOfDay.nano }
     .build()
-
 
 /**
  * Converts [TimeOfDay] to [LocalTime].
@@ -60,8 +56,27 @@ fun ZonedDateTime.toProtoDateTime(): DateTime = DateTime.newBuilder()
  * Converts [DateTime] to [ZonedDateTime].
  */
 fun DateTime.toZonedDateTime(): ZonedDateTime = ZonedDateTime.of(
-    this.year, this.month, this.day,
-    this.hours, this.minutes, this.seconds, this.nanos,
-    if (this.timeZone.id == TimeZone.getDefaultInstance().id)
-        ZoneId.systemDefault() else ZoneId.of(this.timeZone.id)
+    this.year,
+    this.month,
+    this.day,
+    this.hours,
+    this.minutes,
+    this.seconds,
+    this.nanos,
+    if (this.timeZone.id == TimeZone.getDefaultInstance().id) {
+        ZoneId.systemDefault() 
+    }else ZoneId.of(this.timeZone.id)
 )
+
+/**
+ * Converts [Duration] to [Duration].
+ */
+fun com.google.protobuf.Duration.toDuration(): Duration = Duration.ofSeconds(this.seconds, this.nanos.toLong())
+
+/**
+ * Converts [Duration] to [com.google.protobuf.Duration].
+ */
+fun Duration.toProtoDuration() = com.google.protobuf.Duration.newBuilder()
+    .apply { seconds = this@toProtoDuration.seconds }
+    .apply { nanos = this@toProtoDuration.nano }
+    .build()
