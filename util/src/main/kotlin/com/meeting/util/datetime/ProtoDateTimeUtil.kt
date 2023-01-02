@@ -9,11 +9,11 @@ import java.time.*
 /**
  * Converts [LocalDate] to [Date].
  */
-fun LocalDate.toProtoDate(): Date = Date.newBuilder()
-    .apply { year = this@toProtoDate.year }
-    .apply { month = this@toProtoDate.monthValue }
-    .apply { day = this@toProtoDate.dayOfMonth }
-    .build()
+fun LocalDate.toProtoDate(): Date = Date.newBuilder().apply {
+    year = this@toProtoDate.year
+    month = this@toProtoDate.monthValue
+    day = this@toProtoDate.dayOfMonth
+}.build()
 
 /**
  * Converts [Date] to [LocalDate].
@@ -23,12 +23,12 @@ fun Date.toLocalDate(): LocalDate = LocalDate.of(this.year, this.month, this.day
 /**
  * Converts [LocalTime] to [TimeOfDay].
  */
-fun LocalTime.toProtoTimeOfDay(): TimeOfDay = TimeOfDay.newBuilder()
-    .apply { hours = this@toProtoTimeOfDay.hour }
-    .apply { minutes = this@toProtoTimeOfDay.minute }
-    .apply { seconds = this@toProtoTimeOfDay.second }
-    .apply { nanos = this@toProtoTimeOfDay.nano }
-    .build()
+fun LocalTime.toProtoTimeOfDay(): TimeOfDay = TimeOfDay.newBuilder().apply {
+    hours = this@toProtoTimeOfDay.hour
+    minutes = this@toProtoTimeOfDay.minute
+    seconds = this@toProtoTimeOfDay.second
+    nanos = this@toProtoTimeOfDay.nano
+}.build()
 
 /**
  * Converts [TimeOfDay] to [LocalTime].
@@ -38,19 +38,16 @@ fun TimeOfDay.toLocalTime(): LocalTime = LocalTime.of(this.hours, this.minutes, 
 /**
  * Converts [ZonedDateTime] to [DateTime].
  */
-fun ZonedDateTime.toProtoDateTime(): DateTime = DateTime.newBuilder()
-    .apply { year = this@toProtoDateTime.year }
-    .apply { month = this@toProtoDateTime.monthValue }
-    .apply { day = this@toProtoDateTime.dayOfMonth }
-    .apply { hours = this@toProtoDateTime.hour }
-    .apply { minutes = this@toProtoDateTime.minute }
-    .apply { seconds = this@toProtoDateTime.second }
-    .apply { nanos = this@toProtoDateTime.nano }
-    .apply {
-        timeZone = TimeZone.newBuilder()
-            .apply { id = this@toProtoDateTime.zone.id }.build()
-    }
-    .build()
+fun ZonedDateTime.toProtoDateTime(): DateTime = DateTime.newBuilder().apply {
+    year = this@toProtoDateTime.year
+    month = this@toProtoDateTime.monthValue
+    day = this@toProtoDateTime.dayOfMonth
+    hours = this@toProtoDateTime.hour
+    minutes = this@toProtoDateTime.minute
+    seconds = this@toProtoDateTime.second
+    nanos = this@toProtoDateTime.nano
+    timeZone = TimeZone.newBuilder().apply { id = this@toProtoDateTime.zone.id }.build()
+}.build()
 
 /**
  * Converts [DateTime] to [ZonedDateTime].
@@ -64,8 +61,8 @@ fun DateTime.toZonedDateTime(): ZonedDateTime = ZonedDateTime.of(
     this.seconds,
     this.nanos,
     if (this.timeZone.id == TimeZone.getDefaultInstance().id) {
-        ZoneId.systemDefault() 
-    }else ZoneId.of(this.timeZone.id)
+        ZoneId.systemDefault()
+    } else ZoneId.of(this.timeZone.id)
 )
 
 /**
@@ -76,7 +73,7 @@ fun com.google.protobuf.Duration.toDuration(): Duration = Duration.ofSeconds(thi
 /**
  * Converts [Duration] to [com.google.protobuf.Duration].
  */
-fun Duration.toProtoDuration() = com.google.protobuf.Duration.newBuilder()
-    .apply { seconds = this@toProtoDuration.seconds }
-    .apply { nanos = this@toProtoDuration.nano }
-    .build()
+fun Duration.toProtoDuration() = com.google.protobuf.Duration.newBuilder().apply {
+    seconds = this@toProtoDuration.seconds
+    nanos = this@toProtoDuration.nano
+}.build()

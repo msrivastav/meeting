@@ -38,40 +38,31 @@ class CalendarSuggestionService(
     }
 
     fun getUserCalendarsAndSuggestions(
-        orgId: Int,
-        calendarIds: List<String>,
-        startDate: ZonedDateTime,
-        duration: Duration
+        orgId: Int, calendarIds: List<String>, startDate: ZonedDateTime, duration: Duration
     ): UserCalendarEventsWithSuggestions {
         val calendarProviderId = getCalendarProviderId(orgId)
 
         val clientForCalendarConnector = calendarConnectorProviderResolver.getGrpcClientForProvider(calendarProviderId)
 
-        val connectorRequest = ProtoUserCalendarRequest.newBuilder()
-            .apply { this.orgId = orgId }
-            .apply { this.startDate = startDate.toProtoDateTime() }
-            .apply { fetchDaysBefore = this@CalendarSuggestionService.fetchDaysBefore }
-            .apply { fetchDaysAfter = this@CalendarSuggestionService.fetchDaysAfter }
-            .addAllCalendarId(calendarIds)
-            .build()
+        val connectorRequest = ProtoUserCalendarRequest.newBuilder().apply {
+            this.orgId = orgId
+            this.startDate = startDate.toProtoDateTime()
+            fetchDaysBefore = this@CalendarSuggestionService.fetchDaysBefore
+            fetchDaysAfter = this@CalendarSuggestionService.fetchDaysAfter
+        }.addAllCalendarId(calendarIds).build()
 
-        val userCalendarEvents =
-            runBlocking {
-                clientForCalendarConnector.getUserCalendar(connectorRequest)
-                    .userCalendarsList
-                    .map { it.toUserCalendarEvents() }
-            }
+        val userCalendarEvents = runBlocking {
+            clientForCalendarConnector.getUserCalendar(connectorRequest).userCalendarsList.map { it.toUserCalendarEvents() }
+        }.also { responseSize.increment(it.size.toDouble()) }
 
         val suggestions = CalendarSuggestionHelper.getMeetingTimeslotSuggestions(
             // For suggestions, consider only the meetings for which end time is after the given start time,
             // because user only needs suggestions for a new meeting it is trying to create
             userCalendarEvents.flatMap { it.calendarEvents }.filter { it.endDateTime.isAfter(startDate) },
             duration,
+            startDate,
             startDate.plusDays(fetchDaysAfter.toLong())
-        )
-
-        responseSize.increment(userCalendarEvents.size.toDouble())
-        responseSize.increment(suggestions.size.toDouble())
+        ).also { responseSize.increment(it.size.toDouble()) }
 
         return UserCalendarEventsWithSuggestions(userCalendarEvents, suggestions)
     }
@@ -82,9 +73,7 @@ class CalendarSuggestionService(
             if (providerConfig.isEmpty()) {
                 throw OrgApplicationTypeConfigNotFoundException(orgId, ApplicationType.CALENDAR)
             }
-            providerConfig.entries
-                .first { it.value.appType == ApplicationType.CALENDAR }
-                .key
+            providerConfig.entries.first { it.value.appType == ApplicationType.CALENDAR }.key
         }
     }
 }

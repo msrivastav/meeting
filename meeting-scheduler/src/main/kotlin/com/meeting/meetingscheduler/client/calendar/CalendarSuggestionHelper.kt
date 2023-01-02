@@ -7,6 +7,9 @@ import java.time.ZonedDateTime
 class CalendarSuggestionHelper {
 
     companion object {
+        private val MIN_60 = Duration.ofHours(1)
+        private val MIN_30 = Duration.ofMinutes(30)
+        private val MIN_15 = Duration.ofMinutes(15)
 
         /**
          * Provides possible meeting slot suggestions that are suitable for all users.
@@ -32,16 +35,29 @@ class CalendarSuggestionHelper {
 
             // Creating the list of the largest possible meeting slots that are available to all users
             // With given max date limit.
-            val largestAvailableSlots = findLargestAvailableSlots(uniqueMeetingBlocks, meetingStartDate, meetingMaxDate)
+            val availableSlots = findLargestAvailableSlots(uniqueMeetingBlocks, meetingStartDate, meetingMaxDate)
 
-            // Filtering out the slots that are smaller than given duration
-            val meetingBlocksOfValidMinDuration =
-                if (duration.isZero) largestAvailableSlots
-                else largestAvailableSlots.filter {
-                    !Duration.between(it.endDateTime, it.startDateTime).minus(duration).isNegative
-                }
+            /*
+             * For final suggestion list pick following:
+             * 1. Two earliest slots of given duration with half hour gap
+             * 2. One slot of an hour
+             * 3. Two slots of half hour with fifteen minutes gap
+             *
+             * If duration is not specified, then following:
+             * 1. Two slots of one hour with half hour gap
+             * 2. Three slots of half an hour with fifteen minutes gap
+             */
+            val result = ArrayList<CalendarEvent>()
+            if (duration.isZero) {
+                result.addAll(findSlotsOfDurationAndGap(availableSlots, MIN_60, 2, MIN_30))
+                result.addAll(findSlotsOfDurationAndGap(availableSlots, MIN_30, 3, MIN_15))
+            } else {
+                result.addAll(findSlotsOfDurationAndGap(availableSlots, duration, 2, MIN_30))
+                result.addAll(findSlotsOfDurationAndGap(availableSlots, MIN_60, 1, MIN_30))
+                result.addAll(findSlotsOfDurationAndGap(availableSlots, MIN_30, 2, MIN_15))
+            }
 
-            return emptyList()
+            return result
         }
 
         /**
@@ -91,28 +107,75 @@ class CalendarSuggestionHelper {
          * @param uniqueMeetingBlocks A list of unique meeting slots sorted in ascending order of start time.
          */
         fun findLargestAvailableSlots(
-            uniqueMeetingBlocks: List<CalendarEvent>,
-            meetingStartDate: ZonedDateTime,
-            meetingMaxDate: ZonedDateTime
+            uniqueMeetingBlocks: List<CalendarEvent>, meetingStartDate: ZonedDateTime, meetingMaxDate: ZonedDateTime
         ): List<CalendarEvent> {
-            val firstMeetingStartDate = uniqueMeetingBlocks.first().startDateTime
+
             var currentStartTime: ZonedDateTime = meetingStartDate
-            var currentEndTime: ZonedDateTime = meetingStartDate
 
             val result = ArrayList<CalendarEvent>()
 
             for (slot in uniqueMeetingBlocks) {
+
+                if (!slot.startDateTime.isAfter(meetingStartDate)) {
+                    // If the meeting start time is either before or on meeting start time set by user,
+                    // then skip that meeting.
+                    currentStartTime = slot.endDateTime
+                    continue
+                }
+
                 if (!slot.startDateTime.isBefore(meetingMaxDate)) {
-                    currentEndTime = meetingMaxDate
+                    // If the meeting start time is after meeting max date then the
+                    // last open slot ends at meeting max meeting time
+                    result.add(CalendarEvent(currentStartTime, meetingMaxDate))
                     break
                 }
 
                 result.add(CalendarEvent(currentStartTime, slot.startDateTime))
 
+                currentStartTime = slot.endDateTime
+
             }
 
-            result.add(CalendarEvent(currentStartTime, currentEndTime))
-            return emptyList()
+            return result
+        }
+
+        /**
+         * Finds the slots of given duration with specific gap interval.
+         *
+         * @param largestAvailableSlots List of largest available open slots.
+         * @param duration Duration of each meeting slot.
+         * @param numberOfSlots Total number of slots of given duration if possible.
+         * @param gapInterval Gap interval between two slots.
+         *
+         * @return A list of possible open slots of given duration and gap.
+         */
+        fun findSlotsOfDurationAndGap(
+            largestAvailableSlots: List<CalendarEvent>, duration: Duration, numberOfSlots: Int, gapInterval: Duration
+        ): List<CalendarEvent> {
+            // Filter out smaller slots than given duration.
+            val fittingSlots = largestAvailableSlots.filter {
+                !Duration.between(it.endDateTime, it.startDateTime).minus(duration).isNegative
+            }
+
+            val result = ArrayList<CalendarEvent>()
+            var currentSlotNumber: Int = 0
+
+            for (aSlot in fittingSlots) {
+
+                var start = aSlot.startDateTime
+                var end = aSlot.startDateTime.plus(duration)
+
+                while (start.isBefore(aSlot.endDateTime) && !end.isAfter(aSlot.endDateTime) && currentSlotNumber < numberOfSlots) {
+
+                    result.add(CalendarEvent(start, aSlot.endDateTime))
+
+                    start = end.plus(gapInterval)
+                    end = start.plus(duration)
+                    currentSlotNumber++
+                }
+            }
+
+            return result
         }
     }
 }

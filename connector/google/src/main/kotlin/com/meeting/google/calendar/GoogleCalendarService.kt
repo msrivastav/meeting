@@ -30,38 +30,30 @@ class GoogleCalendarService(
     private val numberOfEventsInCalendarDistribution: DistributionSummary
 
     init {
-        numberOfEventsInCalendarDistribution = DistributionSummary.builder("connector.google.events.per.calendar")
-            .publishPercentileHistogram()
-            .percentilePrecision(3)
-            .publishPercentiles(.5, .75, .90, .95, .99, .999)
-            .register(meterRegistry)
+        numberOfEventsInCalendarDistribution =
+            DistributionSummary.builder("connector.google.events.per.calendar").publishPercentileHistogram()
+                .percentilePrecision(3).publishPercentiles(.5, .75, .90, .95, .99, .999).register(meterRegistry)
     }
 
     override fun getUserCalendarSchedule(
-        orgId: Int,
-        calendarId: String,
-        startDate: LocalDate,
-        fetchDaysBefore: Int,
-        fetchDaysAfter: Int
+        orgId: Int, calendarId: String, startDate: LocalDate, fetchDaysBefore: Int, fetchDaysAfter: Int
     ): List<CalendarEvent> {
         val credentials = credentialsProvider.getCredentialsForClientOrg(orgId)
 
-        val service: Calendar =
-            Calendar.Builder(httpTransport, jsonFactory, credentials)
-                .apply { applicationName = calendarApplicationName }
-                .build()
+        val service: Calendar = Calendar.Builder(httpTransport, jsonFactory, credentials)
+            .apply { applicationName = calendarApplicationName }.build()
 
         val startDateTime = startDate.minusDays(fetchDaysBefore.toLong()).toEpochDay() * millisInADay
         val endDateTime = startDate.plusDays(fetchDaysAfter.toLong()).toEpochDay() * millisInADay
 
-        val events = service.events().list(calendarId)
-            .apply { timeMin = DateTime(startDateTime) }
-            .apply { timeMax = DateTime(endDateTime) }
-            .execute()
-            .items
-            .map { convertToCalendarEvent(it) }
+        val events = service.events().list(calendarId).apply {
+            timeMin = DateTime(startDateTime)
+            timeMax = DateTime(endDateTime)
+        }.execute().items.map { convertToCalendarEvent(it) }.also {
+            numberOfEventsInCalendarDistribution.record(it.size.toDouble())
+        }
 
-        numberOfEventsInCalendarDistribution.record(events.size.toDouble())
+
 
         log.debug("Calendar event for org: $orgId, calendarId: $calendarId, startDate: $startDate are: $events")
 

@@ -22,9 +22,7 @@ class OrgConfigStore {
     }
 
     data class OrgProviderConfig(
-        val orgAdminId: String,
-        val orgAdminOauth2Credentials: String,
-        val appType: ApplicationType,
+        val orgAdminId: String, val orgAdminOauth2Credentials: String, val appType: ApplicationType,
 
         /**
          * Reflects whether there is a dedicated api for this org and provider.

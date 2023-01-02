@@ -37,23 +37,15 @@ class CredentialsProvider(
     fun getCredentialsForClientOrg(orgId: Int): Credential {
         val orgConfig =
             orgConfigStore.getOrgProviderConfig(orgId, googleApplicationId) ?: throw OrgProviderConfigNotFoundException(
-                orgId,
-                googleApplicationId
+                orgId, googleApplicationId
             )
 
-        val clientSecrets =
-            GoogleClientSecrets.load(jsonFactory, orgConfig.orgAdminOauth2Credentials.reader())
+        val clientSecrets = GoogleClientSecrets.load(jsonFactory, orgConfig.orgAdminOauth2Credentials.reader())
 
         // Build flow and trigger user authorization request.
         val flow = GoogleAuthorizationCodeFlow.Builder(
-            httpTransport,
-            jsonFactory,
-            clientSecrets,
-            GoogleCredentialGlobals.scopes
-        )
-            .setDataStoreFactory(FileDataStoreFactory(File(tokenDirectory)))
-            .setAccessType("offline")
-            .build()
+            httpTransport, jsonFactory, clientSecrets, GoogleCredentialGlobals.scopes
+        ).setDataStoreFactory(FileDataStoreFactory(File(tokenDirectory))).setAccessType("offline").build()
 
         val receiver = LocalServerReceiver.Builder().build()
 

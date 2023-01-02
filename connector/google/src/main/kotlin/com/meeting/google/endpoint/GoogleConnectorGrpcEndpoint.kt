@@ -11,16 +11,13 @@ import com.meeting.util.datetime.toZonedDateTime
 import org.lognet.springboot.grpc.GRpcService
 
 @GRpcService
-class GoogleConnectorGrpcEndpoint(private val service: CalendarService) :
-    UserCalendarServiceCoroutineImplBase() {
+class GoogleConnectorGrpcEndpoint(private val service: CalendarService) : UserCalendarServiceCoroutineImplBase() {
 
-    override suspend fun getUserCalendar(request: ProtoUserCalendarRequest):
-        ProtoUserCalendarResponse {
+    override suspend fun getUserCalendar(request: ProtoUserCalendarRequest): ProtoUserCalendarResponse {
         val responseBuilder = ProtoUserCalendarResponse.newBuilder()
 
         for (calendarId in request.calendarIdList) {
-            val userCalendarEventsBuilder = ProtoUserCalendarEvents.newBuilder()
-                .apply { this.calendarId = calendarId }
+            val userCalendarEventsBuilder = ProtoUserCalendarEvents.newBuilder().apply { this.calendarId = calendarId }
 
             service.getUserCalendarSchedule(
                 request.orgId,
@@ -28,14 +25,12 @@ class GoogleConnectorGrpcEndpoint(private val service: CalendarService) :
                 request.startDate.toZonedDateTime().toLocalDate(),
                 request.fetchDaysBefore,
                 request.fetchDaysAfter
-            )
-                .map {
-                    ProtoCalendarEvent.newBuilder()
-                        .apply { startDateTime = it.startDateTime.toProtoDateTime() }
-                        .apply { endDateTime = it.endDateTime.toProtoDateTime() }
-                        .build()
-                }
-                .forEach { userCalendarEventsBuilder.addCalendarEvents(it) }
+            ).map {
+                    ProtoCalendarEvent.newBuilder().apply {
+                            startDateTime = it.startDateTime.toProtoDateTime()
+                            endDateTime = it.endDateTime.toProtoDateTime()
+                        }.build()
+                }.forEach { userCalendarEventsBuilder.addCalendarEvents(it) }
 
             responseBuilder.addUserCalendars(userCalendarEventsBuilder.build())
         }
