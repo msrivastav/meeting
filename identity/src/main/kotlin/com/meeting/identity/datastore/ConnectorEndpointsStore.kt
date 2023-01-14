@@ -1,4 +1,4 @@
-package com.meeting.meetingscheduler.datastore
+package com.meeting.identity.datastore
 
 import com.meeting.common.routing.HostPort
 import org.springframework.boot.context.properties.ConfigurationProperties

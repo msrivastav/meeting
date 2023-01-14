@@ -1,8 +1,5 @@
 package com.meeting.google.service
 
-import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport
-import com.google.api.client.http.javanet.NetHttpTransport
-import com.google.api.client.json.gson.GsonFactory
 import com.meeting.common.directory.DirectoryEntry
 import com.meeting.common.directory.DirectoryService
 import com.meeting.google.repository.DirectoryRepository
@@ -16,15 +13,22 @@ class DirectoryServiceImpl(
     private val meterRegistry: MeterRegistry
 ) : DirectoryService {
 
-    private val jsonFactory = GsonFactory.getDefaultInstance()
-    private val httpTransport: NetHttpTransport = GoogleNetHttpTransport.newTrustedTransport()
-    private val counterName = "connector.google.directory.size"
+    private val counterName = "connector.google.directory.userSuggestions"
 
-    override fun getUserSuggestion(orgId: Int, namePrefix: String, limit: Int): List<DirectoryEntry> {
+    override fun getUserRecommendation(orgId: Int, namePart: String, limit: Int): List<DirectoryEntry> {
+        val elementsToTake = if (limit <= 0) 100 else limit
+
         return directoryRepository.getOrgDirectory(orgId)
-            // TODO Fix this
-            .filter { it.fullName.startsWith('1') }
-            .take(limit)
+            .filter {
+                it.givenName.contains(namePart, true) ||
+                    it.familyName.contains(namePart, true) ||
+                    it.email.contains(namePart, true)
+            }
+            .take(elementsToTake)
+            .also {
+                log.debug("Suggestions for org: $orgId and name prefix: $namePart are: $it")
+                meterRegistry.counter(counterName, "org", orgId.toString()).increment(it.size.toDouble())
+            }
     }
 
     private companion object {

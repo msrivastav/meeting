@@ -18,7 +18,7 @@ import java.time.Duration
 @Component
 class DirectoryRepository(
     @Value("\${meeting.google.application-name}") private val applicationName: String,
-    @Value("\${meeting.google.directory.cache-time}") private val cacheTtl: Duration,
+    @Value("\${meeting.google.directory.cache-ttl}") private val cacheTtl: Duration,
     private val credentialsProvider: CredentialsProvider,
     private val meterRegistry: MeterRegistry
 ) {
@@ -71,7 +71,7 @@ class DirectoryRepository(
     }
 
     private fun User.toDirectoryEntry(orgId: Int): DirectoryEntry =
-        DirectoryEntry(this.name.fullName, this.name.givenName, this.name.familyName, this.primaryEmail, orgId)
+        DirectoryEntry(this.name.fullName, this.name.givenName, this.name.familyName, this.primaryEmail, orgId, false)
 
     private companion object {
         private val log = LoggerFactory.getLogger(this::class.java.name)

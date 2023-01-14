@@ -30,12 +30,12 @@ class UserRecommendationGrpcIntegrationTest {
 
     @Test
     fun `User recommendation service returns expected result successfully`() {
-        val request = ProtoUserRecommendationRequest.newBuilder().setUserIdPrefix("ma").build()
+        val request = ProtoUserRecommendationRequest.newBuilder().setNamePart("ma").build()
 
         val expectedResult = ProtoUserRecommendationResponse.newBuilder()
             .addUsers(
                 ProtoUser.newBuilder()
-                    .apply { userEmailId = "manoo.srivastav" }
+                    .apply { email = "manoo.srivastav" }
                     .apply { isExternal = true }
                     .build()
             )

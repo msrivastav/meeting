@@ -26,3 +26,9 @@ spring:
 logging:
   level:
     root: info
+
+meeting:
+  connector-endpoints:
+    1:
+      host: localhost
+      port: 6562
