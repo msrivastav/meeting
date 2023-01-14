@@ -1,13 +1,18 @@
 package com.meeting.google.endpoint
 
 import com.meeting.common.calendar.CalendarEvent
-import com.meeting.google.calendar.GoogleCalendarService
+import com.meeting.common.calendar.CalendarService
+import com.meeting.common.directory.DirectoryEntry
+import com.meeting.common.directory.DirectoryService
 import org.springframework.web.bind.annotation.*
 import java.time.LocalDate
 
 @RestController
 @RequestMapping("debugger")
-class GoogleConnectorDebuggerEndpoint(private val service: GoogleCalendarService) {
+class DebuggerEndpoint(
+    private val service: CalendarService,
+    private val directoryService: DirectoryService
+) {
 
     // startDate format: 2007-12-03
     @GetMapping(
@@ -29,5 +34,16 @@ class GoogleConnectorDebuggerEndpoint(private val service: GoogleCalendarService
         }
 
         return responseMap
+    }
+
+    @GetMapping(
+        "/get-directory/{orgId}",
+        produces = ["application/json"]
+    )
+    @ResponseBody
+    fun getSchedule(
+        @PathVariable orgId: Int
+    ): List<DirectoryEntry> {
+        return directoryService.getDirectory(orgId)
     }
 }

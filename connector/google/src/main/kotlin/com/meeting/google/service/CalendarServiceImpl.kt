@@ -1,4 +1,4 @@
-package com.meeting.google.calendar
+package com.meeting.google.service
 
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport
 import com.google.api.client.http.javanet.NetHttpTransport
@@ -18,8 +18,8 @@ import java.time.*
 import java.util.*
 
 @Service
-class GoogleCalendarService(
-    @Value("\${meeting.google.calendar.application-name}") private val calendarApplicationName: String,
+class CalendarServiceImpl(
+    @Value("\${meeting.google.application-name}") private val applicationName: String,
     private val credentialsProvider: CredentialsProvider,
     meterRegistry: MeterRegistry
 ) : CalendarService {
@@ -36,26 +36,42 @@ class GoogleCalendarService(
     }
 
     override fun getUserCalendarSchedule(
-        orgId: Int, calendarId: String, startDate: LocalDate, fetchDaysBefore: Int, fetchDaysAfter: Int
+        orgId: Int,
+        calendarId: String,
+        startDate: LocalDate,
+        fetchDaysBefore: Int,
+        fetchDaysAfter: Int
     ): List<CalendarEvent> {
         val credentials = credentialsProvider.getCredentialsForClientOrg(orgId)
 
         val service: Calendar = Calendar.Builder(httpTransport, jsonFactory, credentials)
-            .apply { applicationName = calendarApplicationName }.build()
+            .apply { applicationName = this@CalendarServiceImpl.applicationName }.build()
 
         val startDateTime = startDate.minusDays(fetchDaysBefore.toLong()).toEpochDay() * millisInADay
         val endDateTime = startDate.plusDays(fetchDaysAfter.toLong()).toEpochDay() * millisInADay
 
-        val events = service.events().list(calendarId).apply {
-            timeMin = DateTime(startDateTime)
-            timeMax = DateTime(endDateTime)
-        }.execute().items.map { convertToCalendarEvent(it) }.also {
-            numberOfEventsInCalendarDistribution.record(it.size.toDouble())
+        val events = try {
+            service.events().list(calendarId).apply {
+                timeMin = DateTime(startDateTime)
+                timeMax = DateTime(endDateTime)
+            }
+                .execute().items
+                .map(::convertToCalendarEvent)
+                .also {
+                    numberOfEventsInCalendarDistribution.record(it.size.toDouble())
+                }
+        } catch (e: Exception) {
+            log.error(
+                "Could not retrieve calendar for org: " +
+                    "$orgId, calendarId: $calendarId, startDate: $startDate due to: $e"
+            )
+            emptyList()
         }
 
-
-
-        log.debug("Calendar event for org: $orgId, calendarId: $calendarId, startDate: $startDate are: $events")
+        if (events.isNotEmpty()) log.debug(
+            "Calendar event for org:" +
+                " $orgId, calendarId: $calendarId, startDate: $startDate are: $events"
+        )
 
         return events
     }

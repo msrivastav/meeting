@@ -21,29 +21,29 @@ fun ProtoCalendarEvent.toCalendarEvent() =
     CalendarEvent(this.startDateTime.toZonedDateTime(), this.endDateTime.toZonedDateTime())
 
 /**
- * Converts [UserCalendarEvents] to [ProtoUserCalendarEvents].
+ * Converts [CalendarEvents] to [ProtoUserCalendarEvents].
  */
-fun UserCalendarEvents.toProtoUserCalendarEvents(): ProtoUserCalendarEvents =
+fun CalendarEvents.toProtoUserCalendarEvents(): ProtoUserCalendarEvents =
     ProtoUserCalendarEvents.newBuilder().apply { calendarId = this@toProtoUserCalendarEvents.calendarId }
         .addAllCalendarEvents(this@toProtoUserCalendarEvents.calendarEvents.map { it.toProtoCalendarEvent() }).build()
 
 /**
- * Converts [ProtoUserCalendarEvents] to [UserCalendarEvents].
+ * Converts [ProtoUserCalendarEvents] to [CalendarEvents].
  */
 fun ProtoUserCalendarEvents.toUserCalendarEvents() =
-    UserCalendarEvents(this.calendarId, this.calendarEventsList.map { it.toCalendarEvent() })
+    CalendarEvents(this.calendarId, this.calendarEventsList.map { it.toCalendarEvent() })
 
 /**
- * Converts [UserCalendarEventsWithSuggestions] to [ProtoUserCalendarEventsWithSuggestionsResponse].
+ * Converts [CalendarEventsWithSuggestions] to [ProtoUserCalendarEventsWithSuggestionsResponse].
  */
-fun UserCalendarEventsWithSuggestions.toProtoUserCalendarEventsWithSuggestionsResponse(): ProtoUserCalendarEventsWithSuggestionsResponse =
+fun CalendarEventsWithSuggestions.toProtoUserCalendarEventsWithSuggestionsResponse(): ProtoUserCalendarEventsWithSuggestionsResponse =
     ProtoUserCalendarEventsWithSuggestionsResponse.newBuilder()
         .addAllUserCalendars(this.userCalendarEvents.map { it.toProtoUserCalendarEvents() })
         .addAllSuggestions(this.suggestions.map { it.toProtoCalendarEvent() }).build()
 
 /**
- * Converts [ProtoUserCalendarEventsWithSuggestionsResponse] to [UserCalendarEventsWithSuggestions].
+ * Converts [ProtoUserCalendarEventsWithSuggestionsResponse] to [CalendarEventsWithSuggestions].
  */
 fun ProtoUserCalendarEventsWithSuggestionsResponse.toUserCalendarEventsWithSuggestions() =
-    UserCalendarEventsWithSuggestions(this.userCalendarsList.map { it.toUserCalendarEvents() },
+    CalendarEventsWithSuggestions(this.userCalendarsList.map { it.toUserCalendarEvents() },
         this.suggestionsList.map { it.toCalendarEvent() })

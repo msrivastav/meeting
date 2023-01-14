@@ -1,7 +1,7 @@
 package com.meeting.meetingscheduler.client.calendar
 
 import com.meeting.ProtoUserCalendarRequest
-import com.meeting.common.calendar.UserCalendarEventsWithSuggestions
+import com.meeting.common.calendar.CalendarEventsWithSuggestions
 import com.meeting.common.calendar.toUserCalendarEvents
 import com.meeting.common.datastore.OrgConfigStore
 import com.meeting.common.exception.OrgApplicationTypeConfigNotFoundException
@@ -39,7 +39,7 @@ class CalendarSuggestionService(
 
     fun getUserCalendarsAndSuggestions(
         orgId: Int, calendarIds: List<String>, startDate: ZonedDateTime, duration: Duration
-    ): UserCalendarEventsWithSuggestions {
+    ): CalendarEventsWithSuggestions {
         val calendarProviderId = getCalendarProviderId(orgId)
 
         val clientForCalendarConnector = calendarConnectorProviderResolver.getGrpcClientForProvider(calendarProviderId)
@@ -64,7 +64,7 @@ class CalendarSuggestionService(
             startDate.plusDays(fetchDaysAfter.toLong())
         ).also { responseSize.increment(it.size.toDouble()) }
 
-        return UserCalendarEventsWithSuggestions(userCalendarEvents, suggestions)
+        return CalendarEventsWithSuggestions(userCalendarEvents, suggestions)
     }
 
     private fun getCalendarProviderId(orgId: Int): Int {

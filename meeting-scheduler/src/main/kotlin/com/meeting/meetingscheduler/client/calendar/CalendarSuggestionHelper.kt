@@ -27,15 +27,18 @@ class CalendarSuggestionHelper {
         ): List<CalendarEvent> {
             if (userCalendars.isEmpty()) return emptyList()
 
-            // sorting the entries in ascending order of date time
-            val sortedEvents = userCalendars.sortedBy { it.startDateTime }
-
-            // Getting unique meeting blocks
-            val uniqueMeetingBlocks = resolveOverlappingMeetings(sortedEvents)
-
-            // Creating the list of the largest possible meeting slots that are available to all users
-            // With given max date limit.
-            val availableSlots = findLargestAvailableSlots(uniqueMeetingBlocks, meetingStartDate, meetingMaxDate)
+            val availableSlots = userCalendars
+                // sorting the entries in ascending order of date time
+                .sortedBy { it.startDateTime }
+                .let {
+                    // Getting unique meeting blocks
+                    resolveOverlappingMeetings(it)
+                }
+                .let {
+                    // Creating the list of the largest possible meeting slots that are available to all users
+                    // With given max date limit.
+                    findLargestAvailableSlots(it, meetingStartDate, meetingMaxDate)
+                }
 
             /*
              * For final suggestion list pick following:

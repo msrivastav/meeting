@@ -7,12 +7,12 @@ data class CalendarEvent(val startDateTime: ZonedDateTime, val endDateTime: Zone
 /**
  * All calendar events for one calendar id.
  */
-data class UserCalendarEvents(val calendarId: String, val calendarEvents: List<CalendarEvent>)
+data class CalendarEvents(val calendarId: String, val calendarEvents: List<CalendarEvent>)
 
 /**
  * Calendar events for all calendar ids, and list of possible overlapping free timeslots.
  */
-data class UserCalendarEventsWithSuggestions(
-    val userCalendarEvents: List<UserCalendarEvents>,
+data class CalendarEventsWithSuggestions(
+    val userCalendarEvents: List<CalendarEvents>,
     val suggestions: List<CalendarEvent>
 )

@@ -38,11 +38,11 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
-    implementation("io.github.lognet:grpc-spring-boot-starter:4.9.1")
+    implementation("io.github.lognet:grpc-spring-boot-starter:5.0.0")
     implementation("io.grpc:grpc-kotlin-stub:1.3.0")
-    implementation("com.google.protobuf:protobuf-kotlin:3.21.11")
+    implementation("com.google.protobuf:protobuf-kotlin:3.21.12")
     implementation("me.dinowernli:java-grpc-prometheus:0.6.0")
-    testImplementation("org.junit.jupiter:junit-jupiter:5.9.0")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.9.2")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     runtimeOnly("io.micrometer:micrometer-registry-prometheus")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
@@ -51,9 +51,11 @@ dependencies {
     testImplementation("org.testcontainers:junit-jupiter")
     testImplementation(kotlin("test"))
 
-    implementation("com.google.api-client:google-api-client:2.1.1")
+    implementation("com.github.ben-manes.caffeine:caffeine:3.1.2")
+    implementation("com.google.api-client:google-api-client:2.1.2")
     implementation("com.google.oauth-client:google-oauth-client-jetty:1.34.1")
     implementation("com.google.apis:google-api-services-calendar:v3-rev20220715-2.0.0")
+    implementation("com.google.apis:google-api-services-admin-directory:directory_v1-rev20230103-2.0.0")
 }
 
 dependencyManagement {

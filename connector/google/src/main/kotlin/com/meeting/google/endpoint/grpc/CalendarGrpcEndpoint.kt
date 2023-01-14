@@ -1,4 +1,4 @@
-package com.meeting.google.endpoint
+package com.meeting.google.endpoint.grpc
 
 import com.meeting.ProtoCalendarEvent
 import com.meeting.ProtoUserCalendarEvents
@@ -11,7 +11,7 @@ import com.meeting.util.datetime.toZonedDateTime
 import org.lognet.springboot.grpc.GRpcService
 
 @GRpcService
-class GoogleConnectorGrpcEndpoint(private val service: CalendarService) : UserCalendarServiceCoroutineImplBase() {
+class CalendarGrpcEndpoint(private val service: CalendarService) : UserCalendarServiceCoroutineImplBase() {
 
     override suspend fun getUserCalendar(request: ProtoUserCalendarRequest): ProtoUserCalendarResponse {
         val responseBuilder = ProtoUserCalendarResponse.newBuilder()
@@ -26,11 +26,11 @@ class GoogleConnectorGrpcEndpoint(private val service: CalendarService) : UserCa
                 request.fetchDaysBefore,
                 request.fetchDaysAfter
             ).map {
-                    ProtoCalendarEvent.newBuilder().apply {
-                            startDateTime = it.startDateTime.toProtoDateTime()
-                            endDateTime = it.endDateTime.toProtoDateTime()
-                        }.build()
-                }.forEach { userCalendarEventsBuilder.addCalendarEvents(it) }
+                ProtoCalendarEvent.newBuilder().apply {
+                    startDateTime = it.startDateTime.toProtoDateTime()
+                    endDateTime = it.endDateTime.toProtoDateTime()
+                }.build()
+            }.forEach { userCalendarEventsBuilder.addCalendarEvents(it) }
 
             responseBuilder.addUserCalendars(userCalendarEventsBuilder.build())
         }

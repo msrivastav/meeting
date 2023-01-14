@@ -17,8 +17,10 @@ logging:
 
 meeting:
   google:
+    application-name: Meeting
     auth:
       token-directory: tokens
     calendar:
       application-id: 1
-      application-name: Meeting #calendar-app
+    directory:
+      cache-ttl: 10m

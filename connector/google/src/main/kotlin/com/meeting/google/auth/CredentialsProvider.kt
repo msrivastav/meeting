@@ -10,6 +10,7 @@ import com.google.api.client.http.javanet.NetHttpTransport
 import com.google.api.client.json.gson.GsonFactory
 import com.google.api.client.util.store.FileDataStoreFactory
 import com.google.api.services.calendar.CalendarScopes
+import com.google.api.services.directory.DirectoryScopes
 import com.meeting.common.datastore.OrgConfigStore
 import com.meeting.common.exception.OrgProviderConfigNotFoundException
 import org.springframework.beans.factory.annotation.Qualifier
@@ -28,7 +29,7 @@ class CredentialsProvider(
     private val httpTransport: NetHttpTransport = GoogleNetHttpTransport.newTrustedTransport()
 
     companion object GoogleCredentialGlobals {
-        val scopes = listOf(CalendarScopes.CALENDAR_READONLY)
+        val scopes = listOf(CalendarScopes.CALENDAR_READONLY, DirectoryScopes.ADMIN_DIRECTORY_USER_READONLY)
     }
 
     /**
@@ -37,14 +38,18 @@ class CredentialsProvider(
     fun getCredentialsForClientOrg(orgId: Int): Credential {
         val orgConfig =
             orgConfigStore.getOrgProviderConfig(orgId, googleApplicationId) ?: throw OrgProviderConfigNotFoundException(
-                orgId, googleApplicationId
+                orgId,
+                googleApplicationId
             )
 
         val clientSecrets = GoogleClientSecrets.load(jsonFactory, orgConfig.orgAdminOauth2Credentials.reader())
 
         // Build flow and trigger user authorization request.
         val flow = GoogleAuthorizationCodeFlow.Builder(
-            httpTransport, jsonFactory, clientSecrets, GoogleCredentialGlobals.scopes
+            httpTransport,
+            jsonFactory,
+            clientSecrets,
+            scopes
         ).setDataStoreFactory(FileDataStoreFactory(File(tokenDirectory))).setAccessType("offline").build()
 
         val receiver = LocalServerReceiver.Builder().build()
