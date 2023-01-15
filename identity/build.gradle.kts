@@ -41,11 +41,11 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
-    implementation("io.github.lognet:grpc-spring-boot-starter:4.9.1")
+    implementation("io.github.lognet:grpc-spring-boot-starter:5.0.0")
     implementation("io.grpc:grpc-kotlin-stub:1.3.0")
     implementation("com.google.protobuf:protobuf-kotlin:3.21.12")
     implementation("me.dinowernli:java-grpc-prometheus:0.6.0")
-    testImplementation("org.junit.jupiter:junit-jupiter:5.9.0")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.9.2")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     runtimeOnly("com.mysql:mysql-connector-j")
     runtimeOnly("io.micrometer:micrometer-registry-prometheus")
@@ -56,6 +56,8 @@ dependencies {
     testImplementation("org.testcontainers:mysql")
     testImplementation(kotlin("test"))
     testRuntimeOnly("com.h2database:h2")
+    testImplementation("org.grpcmock:grpcmock-spring-boot:0.9.1")
+    testImplementation("org.assertj:assertj-core:3.24.1")
 }
 
 dependencyManagement {

@@ -1,4 +1,4 @@
-package com.meeting.common.server.grpc.interceptor
+package com.meeting.common.grpc.interceptor
 
 import io.grpc.ServerInterceptor
 import io.prometheus.client.CollectorRegistry

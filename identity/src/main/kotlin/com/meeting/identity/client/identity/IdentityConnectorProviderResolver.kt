@@ -16,6 +16,7 @@ import java.util.concurrent.ConcurrentHashMap
 @Component
 class IdentityConnectorProviderResolver(private val connectorEndpointsStore: ConnectorEndpointsStore) {
 
+    // <provider id, grpc channel to the  provider connector>
     private val connectorChannels = ConcurrentHashMap<Int, ManagedChannel>()
 
     private companion object {

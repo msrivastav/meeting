@@ -1,16 +1,16 @@
 package com.meeting.identity.integration
 
-import com.meeting.ProtoUser
-import com.meeting.ProtoUserRecommendationRequest
-import com.meeting.ProtoUserRecommendationResponse
-import com.meeting.UserRecommendationServiceGrpcKt.UserRecommendationServiceCoroutineStub
+import com.meeting.*
+import com.meeting.UserRecommendationServiceGrpc.UserRecommendationServiceBlockingStub
 import io.grpc.ManagedChannel
 import io.grpc.ManagedChannelBuilder
 import io.prometheus.client.CollectorRegistry
 import kotlinx.coroutines.runBlocking
-import org.junit.jupiter.api.AfterAll
-import org.junit.jupiter.api.BeforeAll
-import org.junit.jupiter.api.Test
+import org.grpcmock.GrpcMock.stubFor
+import org.grpcmock.GrpcMock.unaryMethod
+import org.grpcmock.springboot.AutoConfigureGrpcMock
+import org.junit.jupiter.api.*
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.context.DynamicPropertyRegistry
@@ -19,30 +19,74 @@ import org.testcontainers.containers.MySQLContainer
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
 import org.testcontainers.utility.DockerImageName
-import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 @SpringBootTest(properties = ["grpc.port=6000"])
 @Testcontainers
-class UserRecommendationGrpcIntegrationTest {
+@AutoConfigureGrpcMock(port = 6001)
+class UserRecommendationGrpcIntegrationTest(@Value("\${grpcmock.server.port}") private val grpcMockPort: Int) {
 
     @MockBean
     private lateinit var collectorRegistry: CollectorRegistry
 
+    private lateinit var grpcMockChannel: ManagedChannel
+
+    @BeforeEach
+    fun beforeEach() {
+        grpcMockChannel = ManagedChannelBuilder.forAddress("localhost", grpcMockPort)
+            .usePlaintext()
+            .build()
+    }
+
+    @AfterEach
+    fun afterEach() {
+        grpcMockChannel.shutdown()
+    }
+
     @Test
     fun `User recommendation service returns expected result successfully`() {
-        val request = ProtoUserRecommendationRequest.newBuilder().setNamePart("ma").build()
+        val request = ProtoUserRecommendationRequest.newBuilder()
+            .apply {
+                orgId = 1
+                namePart = "ma"
+            }.build()
+
+        // stub connector with grpc mock
+        stubFor(
+            unaryMethod(UserRecommendationServiceGrpcKt.recommendUsersMethod)
+                // .withRequest(request)
+                .willReturn(
+                    ProtoUserRecommendationResponse.newBuilder()
+                        .addUsers(
+                            ProtoUser.newBuilder().setEmail("manoos@meetingworks.app").setIsExternal(false).build()
+                        )
+                        .build()
+                )
+        )
 
         val expectedResult = ProtoUserRecommendationResponse.newBuilder()
             .addUsers(
                 ProtoUser.newBuilder()
-                    .apply { email = "manoo.srivastav" }
-                    .apply { isExternal = true }
+                    .apply {
+                        email = "manoo.srivastav@gmail.com"
+                        isExternal = true
+                    }
+                    .build()
+            )
+            .addUsers(
+                ProtoUser.newBuilder()
+                    .apply {
+                        email = "manoos@meetingworks.app"
+                        isExternal = false
+                    }
                     .build()
             )
             .build()
-        val actualResult = runBlocking { stub.recommendUsers(request) }
 
-        assertEquals(expectedResult, actualResult)
+        val actualResult = runBlocking { stub.recommendUsers(request) }
+        assertTrue { expectedResult.usersList.containsAll(actualResult.usersList) }
+        assertTrue { actualResult.usersList.containsAll(expectedResult.usersList) }
+        assertTrue { expectedResult.usersList.size == actualResult.usersList.size }
     }
 
     companion object {
@@ -52,7 +96,7 @@ class UserRecommendationGrpcIntegrationTest {
 
         private const val GRPC_PORT = 6000
         private lateinit var channel: ManagedChannel
-        lateinit var stub: UserRecommendationServiceCoroutineStub
+        lateinit var stub: UserRecommendationServiceBlockingStub
 
         @Container
         @JvmStatic
@@ -65,7 +109,7 @@ class UserRecommendationGrpcIntegrationTest {
 
         @DynamicPropertySource
         @JvmStatic
-        fun injectDatabaseProperties(registry: DynamicPropertyRegistry) {
+        fun injectProperties(registry: DynamicPropertyRegistry) {
             val mysqlDatabaseUrl =
                 "jdbc:mysql://" + mysqlContainer.host + ":" + mysqlContainer.firstMappedPort + "/" + DATABASE_NAME
             registry.add("spring.datasource.url") { mysqlDatabaseUrl }
@@ -77,7 +121,7 @@ class UserRecommendationGrpcIntegrationTest {
         @JvmStatic
         fun beforeAll() {
             channel = ManagedChannelBuilder.forAddress("localhost", GRPC_PORT).usePlaintext().build()
-            stub = UserRecommendationServiceCoroutineStub(channel)
+            stub = UserRecommendationServiceGrpc.newBlockingStub(channel)
         }
 
         @AfterAll

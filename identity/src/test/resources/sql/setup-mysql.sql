@@ -13,7 +13,7 @@ INSERT INTO `organisation`
 (`organisation_id`,
  `organisation_name`,
  `email_domain`)
-VALUES (1701,
+VALUES (1,
         'Star Trek',
         'gmail.com');
 
@@ -37,6 +37,6 @@ INSERT INTO `external_contact`
  `contact_org_id`)
 VALUES (18101987,
         'manoo.srivastav',
-        1701);
+        1);
 
 

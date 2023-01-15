@@ -28,7 +28,7 @@ dependencies {
 
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-validation")
-    implementation("io.github.lognet:grpc-spring-boot-starter:4.9.1")
+    implementation("io.github.lognet:grpc-spring-boot-starter:5.0.0")
     implementation("me.dinowernli:java-grpc-prometheus:0.3.0")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")

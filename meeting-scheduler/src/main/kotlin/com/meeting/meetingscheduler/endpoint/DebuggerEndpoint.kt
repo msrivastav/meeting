@@ -10,10 +10,10 @@ import java.time.ZonedDateTime
 
 @RestController
 @RequestMapping("debugger")
-class CalendarAndSuggestionsDebuggerEndpoint(private val service: CalendarSuggestionService) {
+class DebuggerEndpoint(private val service: CalendarSuggestionService) {
 
     @GetMapping(
-        "/get-calendar-and-suggestions/{orgId}/{calendarIds}/{startDate}/{duration}",
+        "/get-calendar/{orgId}/{calendarIds}/{startDate}/{duration}",
         produces = ["application/json"]
     )
     fun getCalendarAndSuggestions(
