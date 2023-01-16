@@ -6,8 +6,11 @@ import io.grpc.StatusException
 import io.grpc.StatusRuntimeException
 import io.grpc.protobuf.StatusProto
 
-class GrpcClientHostPortNotFound(providerId: Int) :
-    RuntimeException("Grpc client host and port not found for provider: $providerId")
+class ProviderGrpcHostPortNotFound(providerId: Int) :
+    RuntimeException("Grpc service host and port not found for provider: $providerId")
+
+class ApplicationGrpcHostPortNotFound(application: String) :
+    RuntimeException("Grpc service host and port not found for application: $application")
 
 /**
  * Creates a new [StatusRuntimeException] with another exception and additional details.

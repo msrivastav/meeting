@@ -15,3 +15,14 @@ logging:
 spring:
   thymeleaf:
     cache: false
+
+meeting:
+  user-recommendation:
+    limit: 5
+  application-endpoints:
+    meeting-scheduler:
+      host: localhost
+      port: 6563
+    identity:
+      host: localhost
+      port: 6561

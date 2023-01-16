@@ -18,20 +18,20 @@ class DebuggerEndpoint(
 
     // startDate format: 2007-12-03
     @GetMapping(
-        "/get-calendar/{orgId}/{calendarIds}/{startDate}/{fetchDaysBefore}/{fetchDaysAfter}",
+        "/get-calendar/{orgId}/{userIds}/{startDate}/{fetchDaysBefore}/{fetchDaysAfter}",
         produces = ["application/json"]
     )
     @ResponseBody
     fun getSchedule(
         @PathVariable orgId: Int,
-        @PathVariable calendarIds: List<String>,
+        @PathVariable userIds: List<String>,
         @PathVariable startDate: LocalDate,
         @PathVariable fetchDaysBefore: Int,
         @PathVariable fetchDaysAfter: Int
     ): Map<String, List<CalendarEvent>> {
         val responseMap = HashMap<String, List<CalendarEvent>>()
 
-        calendarIds.forEach {
+        userIds.forEach {
             responseMap[it] =
                 calendarService.getUserCalendarSchedule(orgId, it, startDate, fetchDaysBefore, fetchDaysAfter)
         }

@@ -28,14 +28,19 @@ dependencies {
     implementation(project(":proto"))
     implementation(project(":util"))
 
+    implementation("io.github.lognet:grpc-spring-boot-starter:4.9.1")
+    implementation("io.grpc:grpc-kotlin-stub:1.3.0")
+    implementation("me.dinowernli:java-grpc-prometheus:0.6.0")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+    implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
     implementation("org.thymeleaf.extras:thymeleaf-extras-springsecurity6")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     runtimeOnly("io.micrometer:micrometer-registry-prometheus")
@@ -44,7 +49,7 @@ dependencies {
     testImplementation("org.springframework.security:spring-security-test")
     testImplementation("org.testcontainers:junit-jupiter")
 
-    implementation("com.google.api-client:google-api-client:2.1.1")
+    implementation("com.google.api-client:google-api-client:2.1.2")
     implementation("com.google.oauth-client:google-oauth-client-jetty:1.34.1")
 }
 

@@ -17,7 +17,7 @@ service UserCalendarService {
 
 message ProtoUserCalendarRequest {
   uint32 org_id = 1;
-  repeated string calendar_id = 2;
+  repeated string user_id = 2;
 
   // DateTime is used to maintain consistency, only the date part will be used
   google.type.DateTime start_date = 3;

@@ -7,7 +7,7 @@ import com.meeting.UserCalendarsAndSuggestionsServiceGrpcKt.UserCalendarsAndSugg
 import com.meeting.common.calendar.toProtoUserCalendarEventsWithSuggestionsResponse
 import com.meeting.common.exception.getStatusException
 import com.meeting.common.type.ApplicationType
-import com.meeting.meetingscheduler.client.calendar.CalendarSuggestionService
+import com.meeting.meetingscheduler.service.CalendarService
 import com.meeting.util.datetime.toDuration
 import com.meeting.util.datetime.toZonedDateTime
 import io.micrometer.core.instrument.MeterRegistry
@@ -17,19 +17,18 @@ import java.time.Duration
 
 @GRpcService
 class CalendarGrpcEndpoint(
-    private val calendarSuggestionService: CalendarSuggestionService,
+    private val calendarService: CalendarService,
     private val meterRegistry: MeterRegistry
-) :
-    UserCalendarsAndSuggestionsServiceCoroutineImplBase() {
+) : UserCalendarsAndSuggestionsServiceCoroutineImplBase() {
 
     private val fetchFailedCounterName = "com.meeting.meetingscheduler.calendar.fetch.failed"
 
     override suspend fun getUserCalendarAndSuggestions(request: ProtoUserCalendarsAndSuggestionsRequest):
         ProtoUserCalendarEventsWithSuggestionsResponse {
         return try {
-            calendarSuggestionService.getUserCalendarsAndSuggestions(
+            calendarService.getUserCalendarsAndSuggestions(
                 request.orgId,
-                request.calendarIdList.toList(),
+                request.userIdList.toList(),
                 request.startDate.toZonedDateTime(),
                 if (request.hasDuration()) request.duration.toDuration() else Duration.ofSeconds(0)
             ).toProtoUserCalendarEventsWithSuggestionsResponse()

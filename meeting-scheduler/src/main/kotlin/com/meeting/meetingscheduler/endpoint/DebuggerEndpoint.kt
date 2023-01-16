@@ -1,6 +1,6 @@
 package com.meeting.meetingscheduler.endpoint
 
-import com.meeting.meetingscheduler.client.calendar.CalendarSuggestionService
+import com.meeting.meetingscheduler.service.CalendarService
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
@@ -10,16 +10,16 @@ import java.time.ZonedDateTime
 
 @RestController
 @RequestMapping("debugger")
-class DebuggerEndpoint(private val service: CalendarSuggestionService) {
+class DebuggerEndpoint(private val service: CalendarService) {
 
     @GetMapping(
-        "/get-calendar/{orgId}/{calendarIds}/{startDate}/{duration}",
+        "/get-calendar/{orgId}/{userIds}/{startDate}/{duration}",
         produces = ["application/json"]
     )
     fun getCalendarAndSuggestions(
         @PathVariable orgId: Int,
-        @PathVariable calendarIds: List<String>,
+        @PathVariable userIds: List<String>,
         @PathVariable startDate: ZonedDateTime,
         @PathVariable duration: Duration
-    ) = service.getUserCalendarsAndSuggestions(orgId, calendarIds, startDate, duration)
+    ) = service.getUserCalendarsAndSuggestions(orgId, userIds, startDate, duration)
 }

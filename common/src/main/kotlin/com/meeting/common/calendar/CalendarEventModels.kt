@@ -5,30 +5,47 @@ import com.meeting.ProtoUserCalendarEvents
 import com.meeting.ProtoUserCalendarEventsWithSuggestionsResponse
 import com.meeting.util.datetime.toProtoDateTime
 import com.meeting.util.datetime.toZonedDateTime
+import java.time.ZoneId
 import java.time.ZonedDateTime
 
 data class CalendarEvent(val startDateTime: ZonedDateTime, val endDateTime: ZonedDateTime)
 
-/**
- * All calendar events for one calendar id.
- */
-data class CalendarEvents(val calendarId: String, val calendarEvents: List<CalendarEvent>)
+infix fun CalendarEvent.shiftToZone(zoneId: ZoneId) = CalendarEvent(
+    this.startDateTime.withZoneSameInstant(zoneId),
+    this.endDateTime.withZoneSameInstant(zoneId)
+)
 
 /**
- * Calendar events for all calendar ids, and list of possible overlapping free timeslots.
+ * All calendar events for one user id.
+ */
+data class CalendarEvents(val userId: String, val calendarEvents: List<CalendarEvent>)
+
+infix fun CalendarEvents.shiftToZone(zoneId: ZoneId) = CalendarEvents(
+    this.userId,
+    this.calendarEvents.map { it shiftToZone zoneId }
+)
+
+/**
+ * Calendar events for all user ids, and list of possible overlapping free timeslots.
  */
 data class CalendarEventsWithSuggestions(
     val userCalendarEvents: List<CalendarEvents>,
     val suggestions: List<CalendarEvent>
 )
 
+infix fun CalendarEventsWithSuggestions.shiftToZone(zoneId: ZoneId) = CalendarEventsWithSuggestions(
+    this.userCalendarEvents.map { it shiftToZone zoneId },
+    this.suggestions.map { it shiftToZone zoneId }
+)
+
 /**
  * Converts [CalendarEvent] to [ProtoCalendarEvent].
  */
-fun CalendarEvent.toProtoCalendarEvent(): ProtoCalendarEvent = ProtoCalendarEvent.newBuilder().apply {
-    startDateTime = this@toProtoCalendarEvent.startDateTime.toProtoDateTime()
-    endDateTime = this@toProtoCalendarEvent.endDateTime.toProtoDateTime()
-}.build()
+fun CalendarEvent.toProtoCalendarEvent(): ProtoCalendarEvent = ProtoCalendarEvent.newBuilder()
+    .apply {
+        startDateTime = this@toProtoCalendarEvent.startDateTime.toProtoDateTime()
+        endDateTime = this@toProtoCalendarEvent.endDateTime.toProtoDateTime()
+    }.build()
 
 /**
  * Converts [ProtoCalendarEvent] to [CalendarEvent].
@@ -40,14 +57,14 @@ fun ProtoCalendarEvent.toCalendarEvent() =
  * Converts [CalendarEvents] to [ProtoUserCalendarEvents].
  */
 fun CalendarEvents.toProtoUserCalendarEvents(): ProtoUserCalendarEvents =
-    ProtoUserCalendarEvents.newBuilder().apply { calendarId = this@toProtoUserCalendarEvents.calendarId }
+    ProtoUserCalendarEvents.newBuilder().apply { userId = this@toProtoUserCalendarEvents.userId }
         .addAllCalendarEvents(this@toProtoUserCalendarEvents.calendarEvents.map { it.toProtoCalendarEvent() }).build()
 
 /**
  * Converts [ProtoUserCalendarEvents] to [CalendarEvents].
  */
 fun ProtoUserCalendarEvents.toUserCalendarEvents() =
-    CalendarEvents(this.calendarId, this.calendarEventsList.map { it.toCalendarEvent() })
+    CalendarEvents(this.userId, this.calendarEventsList.map { it.toCalendarEvent() })
 
 /**
  * Converts [CalendarEventsWithSuggestions] to [ProtoUserCalendarEventsWithSuggestionsResponse].

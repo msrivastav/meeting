@@ -1,7 +1,7 @@
-package com.meeting.meetingscheduler.client.calendar
+package com.meeting.meetingscheduler.client
 
 import com.meeting.UserCalendarServiceGrpcKt.UserCalendarServiceCoroutineStub
-import com.meeting.common.exception.GrpcClientHostPortNotFound
+import com.meeting.common.exception.ProviderGrpcHostPortNotFound
 import com.meeting.meetingscheduler.datastore.ConnectorEndpointsStore
 import io.grpc.ManagedChannel
 import io.grpc.ManagedChannelBuilder
@@ -33,7 +33,7 @@ class CalendarConnectorProviderResolver(private val connectorEndpointsStore: Con
     private fun getOrCreateChannel(providerId: Int): ManagedChannel {
         return connectorChannels.computeIfAbsent(providerId) { _ ->
             val hostPort =
-                connectorEndpointsStore.getHostPort(providerId) ?: throw GrpcClientHostPortNotFound(providerId)
+                connectorEndpointsStore.getHostPort(providerId) ?: throw ProviderGrpcHostPortNotFound(providerId)
             ManagedChannelBuilder.forAddress(hostPort.host, hostPort.port)
                 .disableRetry()
                 .intercept(grpcClientMonitoringInterceptor)

@@ -1,4 +1,4 @@
-package com.meeting.ui.controller
+package com.meeting.ui.endpoint
 
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model

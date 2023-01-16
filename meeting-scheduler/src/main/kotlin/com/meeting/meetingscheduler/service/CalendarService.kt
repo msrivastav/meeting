@@ -1,4 +1,4 @@
-package com.meeting.meetingscheduler.client.calendar
+package com.meeting.meetingscheduler.service
 
 import com.meeting.ProtoUserCalendarRequest
 import com.meeting.common.calendar.CalendarEventsWithSuggestions
@@ -6,6 +6,8 @@ import com.meeting.common.calendar.toUserCalendarEvents
 import com.meeting.common.datastore.OrgConfigStore
 import com.meeting.common.exception.OrgApplicationTypeConfigNotFoundException
 import com.meeting.common.type.ApplicationType
+import com.meeting.meetingscheduler.client.CalendarConnectorProviderResolver
+import com.meeting.meetingscheduler.helper.CalendarSuggestionHelper
 import com.meeting.util.datetime.toProtoDateTime
 import io.micrometer.core.instrument.Counter
 import io.micrometer.core.instrument.MeterRegistry
@@ -20,7 +22,7 @@ import java.util.concurrent.ConcurrentHashMap
  * Provides user calendar and recommendations.
  */
 @Service
-class CalendarSuggestionService(
+class CalendarService(
     private val orgConfigStore: OrgConfigStore,
     private val calendarConnectorProviderResolver: CalendarConnectorProviderResolver,
     @Value("\${meeting.calendar.fetch-days-before}") private val fetchDaysBefore: Int,
@@ -33,27 +35,32 @@ class CalendarSuggestionService(
     private val suggestionSize: Counter
 
     init {
-        responseSize = Counter.builder("meetingscheduler.response.size").register(meterRegistry)
-        suggestionSize = Counter.builder("meetingscheduler.suggestion.size").register(meterRegistry)
+        responseSize = Counter.builder("com.meeting.meetingscheduler.response.size").register(meterRegistry)
+        suggestionSize = Counter.builder("com.meeting.meetingscheduler.suggestion.size").register(meterRegistry)
     }
 
     fun getUserCalendarsAndSuggestions(
-        orgId: Int, calendarIds: List<String>, startDate: ZonedDateTime, duration: Duration
+        orgId: Int,
+        userIds: List<String>,
+        startDate: ZonedDateTime,
+        duration: Duration
     ): CalendarEventsWithSuggestions {
         val calendarProviderId = getCalendarProviderId(orgId)
 
         val clientForCalendarConnector = calendarConnectorProviderResolver.getGrpcClientForProvider(calendarProviderId)
 
-        val connectorRequest = ProtoUserCalendarRequest.newBuilder().apply {
+        val userCalendarEvents = ProtoUserCalendarRequest.newBuilder().apply {
             this.orgId = orgId
             this.startDate = startDate.toProtoDateTime()
-            fetchDaysBefore = this@CalendarSuggestionService.fetchDaysBefore
-            fetchDaysAfter = this@CalendarSuggestionService.fetchDaysAfter
-        }.addAllCalendarId(calendarIds).build()
-
-        val userCalendarEvents = runBlocking {
-            clientForCalendarConnector.getUserCalendar(connectorRequest).userCalendarsList.map { it.toUserCalendarEvents() }
-        }.also { responseSize.increment(it.size.toDouble()) }
+            fetchDaysBefore = this@CalendarService.fetchDaysBefore
+            fetchDaysAfter = this@CalendarService.fetchDaysAfter
+        }.addAllUserId(userIds).build()
+            .let {
+                runBlocking {
+                    clientForCalendarConnector.getUserCalendar(it).userCalendarsList
+                        .map { it.toUserCalendarEvents() }
+                }.also { responseSize.increment(it.size.toDouble()) }
+            }
 
         val suggestions = CalendarSuggestionHelper.getMeetingTimeslotSuggestions(
             // For suggestions, consider only the meetings for which end time is after the given start time,

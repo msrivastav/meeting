@@ -6,7 +6,7 @@ import com.meeting.common.directory.DirectoryEntry
 import com.meeting.common.directory.toDirectoryEntry
 import com.meeting.common.exception.OrgApplicationTypeConfigNotFoundException
 import com.meeting.common.type.ApplicationType
-import com.meeting.identity.client.identity.IdentityConnectorProviderResolver
+import com.meeting.identity.client.IdentityConnectorProviderResolver
 import io.micrometer.core.instrument.MeterRegistry
 import kotlinx.coroutines.runBlocking
 import org.slf4j.LoggerFactory

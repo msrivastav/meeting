@@ -1,7 +1,7 @@
-package com.meeting.identity.client.identity
+package com.meeting.identity.client
 
 import com.meeting.UserRecommendationServiceGrpcKt.UserRecommendationServiceCoroutineStub
-import com.meeting.common.exception.GrpcClientHostPortNotFound
+import com.meeting.common.exception.ProviderGrpcHostPortNotFound
 import com.meeting.identity.datastore.ConnectorEndpointsStore
 import io.grpc.ManagedChannel
 import io.grpc.ManagedChannelBuilder
@@ -34,7 +34,7 @@ class IdentityConnectorProviderResolver(private val connectorEndpointsStore: Con
     private fun getOrCreateChannel(providerId: Int): ManagedChannel {
         return connectorChannels.computeIfAbsent(providerId) { _ ->
             val hostPort =
-                connectorEndpointsStore.getHostPort(providerId) ?: throw GrpcClientHostPortNotFound(providerId)
+                connectorEndpointsStore.getHostPort(providerId) ?: throw ProviderGrpcHostPortNotFound(providerId)
             ManagedChannelBuilder.forAddress(hostPort.host, hostPort.port)
                 .disableRetry()
                 .intercept(grpcClientMonitoringInterceptor)

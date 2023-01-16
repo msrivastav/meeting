@@ -10,7 +10,7 @@ import "google/type/datetime.proto";
 
 message ProtoUserCalendarResponse {
 
-  // Calendar events for all calendar ids
+  // Calendar events for all user ids
   repeated ProtoUserCalendarEvents user_calendars = 1;
 }
 
@@ -19,8 +19,8 @@ message ProtoCalendarEvent {
   google.type.DateTime end_date_time = 2;
 }
 
-// Contains list of all calendar events for given calendar id
+// Contains list of all calendar events for given user id
 message ProtoUserCalendarEvents {
-  string calendar_id = 1;
+  string user_id = 1;
   repeated ProtoCalendarEvent calendar_events = 2;
 }

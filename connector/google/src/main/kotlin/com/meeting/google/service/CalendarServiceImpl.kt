@@ -37,7 +37,7 @@ class CalendarServiceImpl(
 
     override fun getUserCalendarSchedule(
         orgId: Int,
-        calendarId: String,
+        userId: String,
         startDate: LocalDate,
         fetchDaysBefore: Int,
         fetchDaysAfter: Int
@@ -51,7 +51,8 @@ class CalendarServiceImpl(
         val endDateTime = startDate.plusDays(fetchDaysAfter.toLong()).toEpochDay() * millisInADay
 
         val events = try {
-            service.events().list(calendarId).apply {
+            // For Google calendars, the user id is the id of primary calendar of the user
+            service.events().list(userId).apply {
                 timeMin = DateTime(startDateTime)
                 timeMax = DateTime(endDateTime)
             }
@@ -63,14 +64,14 @@ class CalendarServiceImpl(
         } catch (e: Exception) {
             log.error(
                 "Could not retrieve calendar for org: " +
-                    "$orgId, calendarId: $calendarId, startDate: $startDate due to: $e"
+                    "$orgId, calendarId: $userId, startDate: $startDate due to: $e"
             )
             emptyList()
         }
 
         if (events.isNotEmpty()) log.debug(
             "Calendar event for org:" +
-                " $orgId, calendarId: $calendarId, startDate: $startDate are: $events"
+                " $orgId, calendarId: $userId, startDate: $startDate are: $events"
         )
 
         return events

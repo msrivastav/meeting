@@ -1,4 +1,4 @@
-package com.meeting.meetingscheduler.client.calendar
+package com.meeting.meetingscheduler.helper
 
 import com.meeting.common.calendar.CalendarEvent
 import java.time.Duration
@@ -110,15 +110,15 @@ class CalendarSuggestionHelper {
          * @param uniqueMeetingBlocks A list of unique meeting slots sorted in ascending order of start time.
          */
         fun findLargestAvailableSlots(
-            uniqueMeetingBlocks: List<CalendarEvent>, meetingStartDate: ZonedDateTime, meetingMaxDate: ZonedDateTime
+            uniqueMeetingBlocks: List<CalendarEvent>,
+            meetingStartDate: ZonedDateTime,
+            meetingMaxDate: ZonedDateTime
         ): List<CalendarEvent> {
-
             var currentStartTime: ZonedDateTime = meetingStartDate
 
             val result = ArrayList<CalendarEvent>()
 
             for (slot in uniqueMeetingBlocks) {
-
                 if (!slot.startDateTime.isAfter(meetingStartDate)) {
                     // If the meeting start time is either before or on meeting start time set by user,
                     // then skip that meeting.
@@ -136,7 +136,6 @@ class CalendarSuggestionHelper {
                 result.add(CalendarEvent(currentStartTime, slot.startDateTime))
 
                 currentStartTime = slot.endDateTime
-
             }
 
             return result
@@ -153,7 +152,10 @@ class CalendarSuggestionHelper {
          * @return A list of possible open slots of given duration and gap.
          */
         fun findSlotsOfDurationAndGap(
-            largestAvailableSlots: List<CalendarEvent>, duration: Duration, numberOfSlots: Int, gapInterval: Duration
+            largestAvailableSlots: List<CalendarEvent>,
+            duration: Duration,
+            numberOfSlots: Int,
+            gapInterval: Duration
         ): List<CalendarEvent> {
             // Filter out smaller slots than given duration.
             val fittingSlots = largestAvailableSlots.filter {
@@ -164,12 +166,10 @@ class CalendarSuggestionHelper {
             var currentSlotNumber: Int = 0
 
             for (aSlot in fittingSlots) {
-
                 var start = aSlot.startDateTime
                 var end = aSlot.startDateTime.plus(duration)
 
                 while (start.isBefore(aSlot.endDateTime) && !end.isAfter(aSlot.endDateTime) && currentSlotNumber < numberOfSlots) {
-
                     result.add(CalendarEvent(start, aSlot.endDateTime))
 
                     start = end.plus(gapInterval)

@@ -26,13 +26,13 @@ class CalendarGrpcEndpoint(
         try {
             val responseBuilder = ProtoUserCalendarResponse.newBuilder()
 
-            for (calendarId in request.calendarIdList) {
+            for (userId in request.userIdList) {
                 val userCalendarEventsBuilder =
-                    ProtoUserCalendarEvents.newBuilder().apply { this.calendarId = calendarId }
+                    ProtoUserCalendarEvents.newBuilder().apply { this.userId = userId }
 
                 service.getUserCalendarSchedule(
                     request.orgId,
-                    calendarId,
+                    userId,
                     request.startDate.toZonedDateTime().toLocalDate(),
                     request.fetchDaysBefore,
                     request.fetchDaysAfter
