@@ -1,28 +1,44 @@
-<html lang="en">
-<head><title>Index</title></head>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
+<head>
+    <title>Please Log In</title>
+</head>
+
+
 <body>
+<h1>Please Log In</h1>
+<div th:if="${param.error}">
+    Invalid username and password.
+</div>
+<div th:if="${param.logout}">
+    You have been logged out.
+</div>
+<form th:action="@{/index}" method="post">
+    <div>
+        <input type="text" name="username" placeholder="Username"/>
+    </div>
+    <div>
+        <input type="password" name="password" placeholder="Password"/>
+    </div>
+    <input type="submit" value="Log in"/>
+</form>
 
-The index page is this.
-
-<script src="https://accounts.google.com/gsi/client" async defer></script>
+<!--<script src="https://accounts.google.com/gsi/client" async defer></script>
 <div id="g_id_onload"
-     data-client_id="974211070499-360t350151qkbd38r7pa5r62ikq3ffrs.apps.googleusercontent.com"
-     data-context="signin"
-     data-ux_mode="redirect"
-     data-login_uri="http://localhost:8080/userHome/google"
-     data-auto_select="true"
-     data-itp_support="true">
+data-client_id="974211070499-360t350151qkbd38r7pa5r62ikq3ffrs.apps.googleusercontent.com"
+data-context="signin"
+data-ux_mode="redirect"
+data-login_uri="http://localhost:8080/userHome/google"
+data-auto_select="true"
+data-itp_support="true">
 </div>
 
 <div class="g_id_signin"
-     data-type="standard"
-     data-shape="rectangular"
-     data-theme="outline"
-     data-text="signin_with"
-     data-size="large"
-     data-logo_alignment="left">
-</div>
-
-
+data-type="standard"
+data-shape="rectangular"
+data-theme="outline"
+data-text="signin_with"
+data-size="large"
+data-logo_alignment="left">
+</div>-->
 </body>
 </html>

@@ -34,7 +34,7 @@ class ApplicationProviderResolver(private val applicationEndpointsStore: Applica
      * Provides gRPC stub to call the server of the meeting scheduler application.
      */
     fun getGrpcClientForMeetingSchedulerApplication() =
-        UserCalendarsAndSuggestionsServiceCoroutineStub(getOrCreateChannel("meetingScheduler"))
+        UserCalendarsAndSuggestionsServiceCoroutineStub(getOrCreateChannel("meeting-scheduler"))
 
     private fun getOrCreateChannel(application: String): ManagedChannel {
         return applicationChannels.computeIfAbsent(application) { _ ->

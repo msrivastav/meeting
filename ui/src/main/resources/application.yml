@@ -10,11 +10,19 @@ management:
 
 logging:
   level:
-    root: info
+    root: debug
 
 spring:
   thymeleaf:
     cache: false
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: "974211070499-360t350151qkbd38r7pa5r62ikq3ffrs.apps.googleusercontent.com"
+            client-secret: "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"
+            redirect-uri: "{baseUrl}/userHome"
 
 meeting:
   user-recommendation:

@@ -6,25 +6,37 @@ import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport
 import com.google.api.client.http.javanet.NetHttpTransport
 import com.google.api.client.json.gson.GsonFactory
 import org.slf4j.LoggerFactory
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.core.Authentication
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.validation.BindingResult
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.*
 import java.util.*
 
 @Controller
 class UserHomeController {
 
-    @PostMapping("/userHome/{source}")
+    @PostMapping("/userHome")
+    @GetMapping("/userHome")
+    fun getUserHomePage1(auth: Authentication): String {
+        log.info(auth.name)
+        return "userHome"
+    }
+
+    @GetMapping("/userHome")
+    fun getUserHomePage2(auth: Authentication): String {
+        log.info(auth.name)
+        return "userHome"
+    }
+
+    // @PostMapping("/userHome")
     fun getUserHomePage(
-        @PathVariable("source") source: String,
         @RequestBody req: String,
         result: BindingResult,
         model: Model
     ): String {
-        log.info(source)
         req.split("&").forEach(log::info)
         log.info(result.toString())
         log.info(model.asMap().toString())
@@ -53,7 +65,7 @@ class UserHomeController {
         } else {
             println("Invalid ID token.")
         }
-
+        SecurityContextHolder.getContext().authentication = UsernamePasswordAuthenticationToken(null, null)
         return "userHome"
     }
 
