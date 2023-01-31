@@ -1,0 +1,61 @@
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
+<head><title>User Home</title>
+
+    <meta name="_csrf" content="${_csrf.token}"/>
+    <meta name="_csrf_header" content="${_csrf.headerName}"/>
+
+    <script type="text/javascript">
+        function loadAttendee(str) {
+            /*            const token = $("meta[name='_csrf']").attr("content"); */
+            // X-CSRF-TOKEN
+            // var header = $("meta[name='_csrf_header']").attr("content");
+
+            const tk = document.getElementById("tkn").innerText
+
+
+            const xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                document.getElementById("attendeeSuggestion").innerHTML = this.responseText;
+                // myFunction(this);
+            }
+            xhttp.open("POST", "/schedule/meeting/attendeeSuggestion");
+            xhttp.setRequestHeader("X-CSRF-TOKEN", tk);
+            xhttp.send("attendee=" + str);
+        }
+
+        function myFunction(xml) {
+
+            /*        const xmlDoc = xml.responseXML;
+                    const x = xmlDoc.getElementsByTagName("CD");
+                    let table="<tr><th>Artist</th><th>Title</th></tr>";
+                    for (let i = 0; i <x.length; i++) {
+                        table += "<tr><td>" +
+                            x[i].getElementsByTagName("ARTIST")[0].childNodes[0].nodeValue +
+                            "</td><td>" +
+                            x[i].getElementsByTagName("TITLE")[0].childNodes[0].nodeValue +
+                            "</td></tr>";
+                    }
+                    document.getElementById("demo").innerHTML = table;*/
+        }
+
+    </script>
+</head>
+<body>
+
+<div th:include="include/logout :: logout"></div>
+
+<p>
+    Welcome <b><span th:text="${user}"></span></b>
+</p>
+
+<p>
+    Title: <input type="text" id="title"/>
+    <br/>
+    Attendees: <input type="text" id="attendee" onkeyup="loadAttendee(this.value)"/>
+    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" id="tkn"/>
+    <br/>
+<div id="attendeeSuggestion"></div>
+
+</p>
+</body>
+</html>

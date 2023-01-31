@@ -12,22 +12,54 @@ import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.validation.BindingResult
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestMethod
+import org.springframework.web.bind.annotation.RequestParam
 import java.util.*
 
 @Controller
 class UserHomeController {
 
-    @PostMapping("/userHome")
-    @GetMapping("/userHome")
-    fun getUserHomePage1(auth: Authentication): String {
+    //  @PostMapping("/userHome")
+    fun getUserHomePage1(
+        auth: Authentication,
+        model: Model
+    ): String {
         log.info(auth.name)
+        model.addAttribute("user", auth.name)
         return "userHome"
     }
 
-    @GetMapping("/userHome")
-    fun getUserHomePage2(auth: Authentication): String {
+    @RequestMapping("/userHome", method = [RequestMethod.GET, RequestMethod.POST])
+    fun getUserHomePage2(
+        auth: Authentication,
+        model: Model
+    ): String {
         log.info(auth.name)
+        model.addAttribute("user", auth.name)
+        return "userHome"
+    }
+
+    // @PostMapping("/oauth2/land/google")
+    fun postGoogle(
+        @RequestParam("state", required = false) state: String,
+        auth: Authentication,
+        model: Model
+    ): String {
+        log.info(auth.name)
+        model.addAttribute("user", auth.name)
+        return "userHome"
+    }
+
+    // @GetMapping("/oauth2/land/google")
+    fun getGoogle(
+        @RequestParam("state", required = false) state: String,
+        model: Model,
+        auth: Authentication
+    ): String {
+        log.info(auth.name)
+        model.addAttribute("user", auth.name)
         return "userHome"
     }
 

@@ -22,7 +22,10 @@ spring:
           google:
             client-id: "974211070499-360t350151qkbd38r7pa5r62ikq3ffrs.apps.googleusercontent.com"
             client-secret: "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"
-            redirect-uri: "{baseUrl}/userHome"
+            redirect-uri: "http://localhost:8080/oauth2/land/google"
+          facebook:
+            client-id: "asdas2134asfd"
+            client-secret: "adssa2qe32"
 
 meeting:
   user-recommendation:

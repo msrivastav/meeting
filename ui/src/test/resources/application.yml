@@ -1,4 +1,6 @@
 meeting:
+  user-recommendation:
+    limit: 5
   application-endpoints:
     meeting-scheduler:
       host: localhost
@@ -6,3 +8,17 @@ meeting:
     identity:
       host: localhost
       port: 6561
+
+spring:
+  thymeleaf:
+    cache: false
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: "c"
+            client-secret: "c"
+          facebook:
+            client-id: "asdas2134asfd"
+            client-secret: "adssa2qe32"
