@@ -1,0 +1,22 @@
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Logout</title>
+</head>
+<body>
+<div th:fragment="header">
+    <table style="border-style: solid; border-width: 3px;">
+        <tr>
+            <td>
+                Welcome <b><span th:text="${user}"></span></b>
+            </td>
+            <td>
+                <form th:action="@{/logout}" method="post">
+                    <input type="submit" value="Logout"/>
+                </form>
+
+            </td>
+        </tr>
+    </table>
+</div>
+</body>
+</html>

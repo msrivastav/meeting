@@ -2,12 +2,7 @@
 <head><title>User Home</title></head>
 <body>
 
-<div th:include="include/logout :: logout"></div>
-
-<p>
-Welcome <b><span th:text="${user}"></span></b>
-</p>
-
+<div th:include="include/header :: header"></div>
 <p>
     <a href="/schedule/meeting">Schedule a meeting</a>
 

@@ -6,17 +6,10 @@
 
     <script type="text/javascript">
         function loadAttendee(str) {
-            /*            const token = $("meta[name='_csrf']").attr("content"); */
-            // X-CSRF-TOKEN
-            // var header = $("meta[name='_csrf_header']").attr("content");
-
             const tk = document.getElementById("tkn").innerText
-
-
             const xhttp = new XMLHttpRequest();
             xhttp.onreadystatechange = function () {
                 document.getElementById("attendeeSuggestion").innerHTML = this.responseText;
-                // myFunction(this);
             }
             xhttp.open("POST", "/schedule/meeting/attendeeSuggestion");
             xhttp.setRequestHeader("X-CSRF-TOKEN", tk);
@@ -38,24 +31,119 @@
                     document.getElementById("demo").innerHTML = table;*/
         }
 
+        function submitMeetingForm() {
+            const form = document.createElement("form");
+            form.method = "POST";
+            form.action = "/schedule/setup/meeting";
+            form.onsubmit = function () {
+                alert("form Submitted");
+            }
+
+            addFieldToForm(form, "INPUT", "title");
+            addFieldToForm(form, "INPUT", "attendees");
+            addFieldToForm(form, "INPUT", "startTime");
+            addFieldToForm(form, "INPUT", "endTime");
+            addFieldToForm(form, "INPUT", "callOptions");
+            addFieldToForm(form, "INPUT", "meetingDetails");
+
+            document.body.appendChild(form);
+            form.submit();
+        }
+
+        function addFieldToForm(form, type, name) {
+            const field = document.createElement(type);
+            field.name = name;
+            field.type = 'hidden';
+            field.value = document.getElementById(name).value;
+            form.append(field);
+        }
+
+        function fetchScheduleRecommendation() {
+            const startTime = document.getElementById("startTime").value;
+            const endTime = document.getElementById("endTime").value;
+
+            const tk = document.getElementById("tkn").innerText
+            const xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                document.getElementById("scheduleRecommendations").innerHTML = this.responseText;
+            }
+            xhttp.open("POST", "/schedule/meeting/recommendation");
+            xhttp.setRequestHeader("X-CSRF-TOKEN", tk);
+            xhttp.send("startTime=" + startTime + "&endTime=" + endTime);
+        }
+
+        function loadTemplate(tmp) {
+            switch (tmp.value) {
+                case "1":
+                    document.getElementById("meetingDetails").innerText = "This is template one.";
+                    break;
+                case "2":
+                    document.getElementById("meetingDetails").innerText = "This is template Two.";
+                    break;
+                case "3":
+                    document.getElementById("meetingDetails").innerText = "This is template Three.";
+                    break;
+                case "4":
+                    document.getElementById("meetingDetails").innerText = "This is template 4.";
+                    break;
+                default:
+                    document.getElementById("meetingDetails").innerText = "This is default template.";
+            }
+        }
+
     </script>
 </head>
 <body>
+<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" id="tkn"/>
+<div th:include="include/header :: header"></div>
 
-<div th:include="include/logout :: logout"></div>
-
-<p>
-    Welcome <b><span th:text="${user}"></span></b>
-</p>
-
-<p>
-    Title: <input type="text" id="title"/>
-    <br/>
-    Attendees: <input type="text" id="attendee" onkeyup="loadAttendee(this.value)"/>
-    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" id="tkn"/>
-    <br/>
-<div id="attendeeSuggestion"></div>
-
-</p>
+<br/>
+<table style="border-style: solid; border-width: 3px;">
+    <tr>
+        <td><label for="title">Title: </label><input type="text" id="title"/></td>
+    </tr>
+    <tr>
+        <td><label for="attendees">Attendees: </label>
+            <input type="text" id="attendees" onkeyup="loadAttendee(this.value)" required/></td>
+        <td>
+            <div id="attendeeSuggestion"></div>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <label for="startTime">Start: </label>
+            <input type="time" id="startTime" onchange="fetchScheduleRecommendation()" required/>
+        </td>
+        <td><label for="endTime">End: </label>
+            <input type="time" id="endTime" onchange="fetchScheduleRecommendation()" required/>
+        </td>
+        <td>
+            <div id="scheduleRecommendations"></div>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <label for="callOptions">Choose call option: </label>
+            <select id="callOptions" multiple>
+                <option th:each="opt : ${callOptions}" th:value="${opt.key}" th:text="${opt.value}"/>
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <label for="descTemplates">Choose a Meeting Template: </label>
+            <select id="descTemplates" onchange="loadTemplate(this)">
+                <option th:each="opt : ${descTemplates}" th:value="${opt.key}" th:text="${opt.value}"/>
+            </select>
+            <br/>
+            <label for="meetingDetails">Add Meeting Details: </label><textarea id="meetingDetails"></textarea>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <input type="button" value="Setup" onclick="submitMeetingForm()"/>
+        </td>
+    </tr>
+</table>
 </body>
 </html>
