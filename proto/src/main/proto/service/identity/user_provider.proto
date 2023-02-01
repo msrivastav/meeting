@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+package com.meeting;
+
+option java_package = "com.meeting";
+option java_outer_classname = "UserProviderProto";
+option java_multiple_files = true;
+
+import "service/identity/user.proto";
+import "google/protobuf/empty.proto";
+
+service UserProviderService {
+
+  rpc RecommendUsers(ProtoUserRecommendationRequest) returns (ProtoUserRecommendationResponse);
+  rpc GetUser(ProtoUserDetailRequest) returns (ProtoUserDetailResponse);
+  rpc CreateUser(ProtoUser) returns (ProtoCreateUserResponse);
+  rpc UpdateUser(ProtoUser) returns (google.protobuf.Empty);
+}
+
+message ProtoUserRecommendationRequest {
+  int32 org_id = 1;
+
+  // Name part matching email, or given name, or family name
+  string name_part = 2;
+
+  // Limit of users each of type internal and external
+  optional int32 limit = 3;
+}
+
+message ProtoUserRecommendationResponse {
+   repeated ProtoUser users = 1;
+}
+
+message ProtoUserDetailRequest {
+  repeated string email_ids = 1;
+}
+
+message ProtoUserDetailResponse {
+  repeated ProtoUser users = 1;
+}
+
+message ProtoCreateUserResponse {
+  uint32 user_id = 1;
+}

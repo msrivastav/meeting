@@ -16,7 +16,7 @@ class IdentityProviderService(
     private val applicationProviderResolver: ApplicationProviderResolver
 ) {
 
-    fun getUSerRecommendation(orgId: Int, namePart: String): List<DirectoryEntry> {
+    fun getUserRecommendation(orgId: Int, namePart: String): List<DirectoryEntry> {
         val identityAppStub = applicationProviderResolver.getGrpcClientForIdentityApplication()
 
         return try {

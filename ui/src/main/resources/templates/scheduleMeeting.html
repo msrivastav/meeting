@@ -43,8 +43,14 @@
             addFieldToForm(form, "INPUT", "attendees");
             addFieldToForm(form, "INPUT", "startTime");
             addFieldToForm(form, "INPUT", "endTime");
-            addFieldToForm(form, "INPUT", "callOptions");
             addFieldToForm(form, "INPUT", "meetingDetails");
+
+            // addFieldToForm(form, "INPUT", "callOptions");
+            const field = document.createElement("INPUT");
+            field.name = "callOptions";
+            field.type = 'hidden';
+            field.value = document.getElementById("callOptions").values;
+            form.append(field);
 
             document.body.appendChild(form);
             form.submit();

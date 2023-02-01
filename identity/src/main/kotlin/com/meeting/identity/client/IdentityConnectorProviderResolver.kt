@@ -1,6 +1,6 @@
 package com.meeting.identity.client
 
-import com.meeting.UserRecommendationServiceGrpcKt.UserRecommendationServiceCoroutineStub
+import com.meeting.UserProviderServiceGrpcKt.UserProviderServiceCoroutineStub
 import com.meeting.common.exception.ProviderGrpcHostPortNotFound
 import com.meeting.identity.datastore.ConnectorEndpointsStore
 import io.grpc.ManagedChannel
@@ -27,8 +27,8 @@ class IdentityConnectorProviderResolver(private val connectorEndpointsStore: Con
     /**
      * Provides gRPC stub to call the server of the provider.
      */
-    fun getGrpcClientForProvider(providerId: Int): UserRecommendationServiceCoroutineStub {
-        return UserRecommendationServiceCoroutineStub(getOrCreateChannel(providerId))
+    fun getGrpcClientForProvider(providerId: Int): UserProviderServiceCoroutineStub {
+        return UserProviderServiceCoroutineStub(getOrCreateChannel(providerId))
     }
 
     private fun getOrCreateChannel(providerId: Int): ManagedChannel {
